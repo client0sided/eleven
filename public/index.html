@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Eleven</title>
+<link href="https://unpkg.com/nes.css/css/nes.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body {
+  font-family: "Press Start 2P";
+  background: #212529;
+  display: flex;
+  justify-content: center;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+.container {
+  width: 500px;
+}
+select { width: 100%; }
+#errorMsg {
+  display: none;
+  margin-top: 12px;
+  font-size: 9px;
+}
+</style>
+</head>
+<body>
+
+<section class="nes-container with-title is-dark container">
+  <h2 class="title">ELEVEN</h2>
+
+  <label>İsim</label>
+  <input id="name" class="nes-input is-dark" maxlength="20">
+
+  <br><br>
+
+  <label>Sınıf Boyutu</label>
+  <div class="nes-select is-dark">
+    <select id="gridSize">
+      <option value="5x4">5 x 4 (20 kişi)</option>
+      <option value="5x5">5 x 5 (25 kişi)</option>
+      <option value="4x4">4 x 4 (16 kişi)</option>
+      <option value="6x5">6 x 5 (30 kişi)</option>
+    </select>
+  </div>
+
+  <br><br>
+
+  <button class="nes-btn is-success" onclick="createRoom()">Parti Oluştur</button>
+
+  <hr>
+
+  <label>Parti Kodu</label>
+  <input id="code" class="nes-input is-dark" maxlength="10" style="text-transform:uppercase">
+  <br><br>
+  <button class="nes-btn is-warning" onclick="joinRoom()">Katıl</button>
+
+  <p id="errorMsg" class="nes-text is-error"></p>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io()
+
+function showError(msg) {
+  const el = document.getElementById("errorMsg")
+  el.textContent = msg
+  el.style.display = "block"
+}
+
+function clearError() {
+  const el = document.getElementById("errorMsg")
+  el.textContent = ""
+  el.style.display = "none"
+}
+
+function getName() {
+  return document.getElementById("name").value.trim()
+}
+
+function createRoom() {
+  clearError()
+  const name = getName()
+  if (!name) return showError("İsim boş olamaz.")
+
+  const grid = document.getElementById("gridSize").value
+  const [cols, rows] = grid.split("x").map(Number)
+
+  localStorage.setItem("playerName", name)
+  socket.emit("createRoom", { name, rows, cols })
+}
+
+function joinRoom() {
+  clearError()
+  const name = getName()
+  const code = document.getElementById("code").value.trim().toUpperCase()
+
+  if (!name) return showError("İsim boş olamaz.")
+  if (!code) return showError("Parti kodu boş olamaz.")
+
+  localStorage.setItem("playerName", name)
+  socket.emit("joinRoom", { name, code })
+}
+
+socket.on("roomCreated", code => {
+  const name = getName()
+  window.location = `/game.html?room=${code}&name=${encodeURIComponent(name)}`
+})
+
+socket.on("updateRoom", () => {
+  const name = getName()
+  const code = document.getElementById("code").value.trim().toUpperCase()
+  if (code) {
+    window.location = `/game.html?room=${code}&name=${encodeURIComponent(name)}`
+  }
+})
+
+socket.on("errorMessage", msg => {
+  showError(msg)
+})
+</script>
+
+</body>
+</html>
