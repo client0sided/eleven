@@ -1,159 +1,67 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eleven</title>
-<link href="https://cdn.jsdelivr.net/npm/psone.css/ps1.css" rel="stylesheet">
-<style>
-* { box-sizing: border-box; }
-body {
-  background: #000;
-  padding: 1.5rem 1rem 4rem;
-  min-height: 100vh;
-  font-family: inherit;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #333;
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-}
-header h1 { margin: 0; font-size: 1.3rem; letter-spacing: 0.3rem; color: #fff; }
-.code-tag { font-size: 0.7rem; color: #666; letter-spacing: 0.1rem; }
-.code-tag b { color: #fff; }
-
-.main { max-width: 1000px; margin: 0 auto; }
-
-/* Lobby */
-#lobby { max-width: 400px; margin: 0 auto; text-align: center; }
-#lobby h2 { font-size: 0.7rem; letter-spacing: 0.2rem; color: #888; text-transform: uppercase; margin-bottom: 1rem; }
-#playerList { list-style: none; padding: 0; margin: 0 0 1.5rem; }
-#playerList li { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #333; font-size: 0.75rem; color: #ccc; }
-#playerList li .tag { color: #aaa; font-size: 0.65rem; }
-#waitMsg { font-size: 0.7rem; color: #666; margin-bottom: 1rem; }
-#startBtn { width: 100%; }
-
-/* Scoreboard */
-#scoreboard {
-  display: flex;
-  justify-content: center;
-  gap: 4rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-.stat { text-align: center; }
-.stat .val { font-size: 4rem; color: #fff; line-height: 1; display: block; }
-.stat .lbl { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 0.15rem; margin-top: 0.3rem; display: block; }
-
-#turnBanner {
-  text-align: center;
-  padding: 0.7rem;
-  margin-bottom: 1.2rem;
-  font-size: 0.75rem;
-  color: #666;
-  border: 1px solid #333;
-}
-#turnBanner.my-turn { border-color: #fff; color: #fff; }
-
-#moveArea { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 0.3rem; }
-#moveArea input { width: 200px; }
-#moveArea button { }
-#moveError { text-align: center; font-size: 0.7rem; color: #e74c3c; min-height: 1rem; margin-bottom: 1.2rem; }
-
-/* Feed */
-#feed { text-align: center; margin-bottom: 1rem; min-height: 1.5rem; }
-#feed p { font-size: 0.72rem; color: #e74c3c; padding: 2px 0; animation: fi 0.2s ease; }
-@keyframes fi { from { opacity: 0; } to { opacity: 1; } }
-
-/* Grid */
-#grid { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-top: 1rem; }
-.grid-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.desk {
-  width: 110px; height: 78px;
-  background: #111;
-  border: 1px solid #333;
-  display: flex; align-items: center; justify-content: center; flex-direction: column;
-  position: relative;
-  transition: border-color 0.15s;
-}
-.desk .dnum { position: absolute; top: 3px; right: 5px; font-size: 0.6rem; color: #444; }
-.desk .dname { font-size: 0.68rem; text-align: center; padding: 0 4px; word-break: break-all; color: #ccc; }
-.desk.is-active { border-color: #fff; background: #1a1a1a; }
-.desk.is-active .dname { color: #fff; }
-.desk.is-me { border-color: #888; }
-.desk.is-out { opacity: 0.25; }
-.desk.is-out .dname { text-decoration: line-through; }
-
-/* Overlay */
-#overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
-#overlay.show { display: flex; }
-#overlayBox { background: #111; border: 1px solid #444; padding: 2rem; width: 100%; max-width: 380px; text-align: center; }
-#overlayBox h2 { color: #fff; font-size: 1rem; letter-spacing: 0.2rem; margin-bottom: 0.8rem; }
-#overlayBox p { color: #888; font-size: 0.75rem; margin-bottom: 1.5rem; }
-#overlayBox input { width: 100%; margin-bottom: 0.5rem; }
-#overlayErr { font-size: 0.7rem; color: #e74c3c; min-height: 1rem; margin-bottom: 0.5rem; }
-.btn-row { display: flex; gap: 0.5rem; }
-.btn-row button { flex: 1; }
-
-.hidden { display: none !important; }
-</style>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen px-4 py-6 pb-16">
 
-<div id="overlay">
-  <div id="overlayBox"></div>
-</div>
-
-<header>
-  <h1>ELEVEN</h1>
-  <div class="code-tag">KOD: <b id="roomCode"></b></div>
-</header>
-
-<div class="main">
-
-  <!-- LOBBY -->
-  <div id="lobby" class="hidden">
-    <h2>Oyuncular</h2>
-    <ul id="playerList"></ul>
-    <p id="waitMsg" class="hidden">Host oyunu başlatmasını bekliyor...</p>
-    <button id="startBtn" class="ps1-btn is-primary hidden" onclick="startGame()">Oyunu Başlat</button>
+  <!-- Overlay -->
+  <div id="overlay" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div id="overlayBox" class="bg-zinc-900 border border-zinc-800 rounded-xl p-8 w-full max-w-sm text-center"></div>
   </div>
 
-  <!-- GAME -->
-  <div id="game" class="hidden">
-    <div class="ps1-container is-dark" style="margin-bottom:1.5rem;">
-      <div id="scoreboard">
-        <div class="stat">
-          <span class="val" id="numberDisplay">0</span>
-          <span class="lbl">Sayaç</span>
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-8 pb-4 border-b border-zinc-800 max-w-5xl mx-auto">
+    <h1 class="text-xl font-black tracking-widest">ELEVEN</h1>
+    <span class="text-zinc-500 text-sm">KOD: <span id="roomCode" class="text-zinc-200 font-mono font-bold"></span></span>
+  </header>
+
+  <div class="max-w-5xl mx-auto">
+
+    <!-- LOBBY -->
+    <div id="lobby" class="hidden max-w-sm mx-auto">
+      <h2 class="text-xs uppercase tracking-widest text-zinc-500 mb-4 text-center">Oyuncular</h2>
+      <ul id="playerList" class="mb-6 divide-y divide-zinc-800"></ul>
+      <p id="waitMsg" class="hidden text-center text-zinc-500 text-sm mb-4">Host oyunu başlatmasını bekliyor...</p>
+      <button id="startBtn" class="hidden w-full bg-white text-zinc-950 font-semibold text-sm rounded-lg py-2.5 hover:bg-zinc-200 transition-colors" onclick="startGame()">
+        Oyunu Başlat
+      </button>
+    </div>
+
+    <!-- GAME -->
+    <div id="game" class="hidden">
+
+      <div class="flex justify-center gap-16 bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-6">
+        <div class="text-center">
+          <span id="numberDisplay" class="block text-6xl font-black text-white leading-none">0</span>
+          <span class="block text-xs uppercase tracking-widest text-zinc-500 mt-2">Sayaç</span>
         </div>
-        <div class="stat">
-          <span class="val" id="aliveCount">-</span>
-          <span class="lbl">Kalan</span>
+        <div class="text-center">
+          <span id="aliveCount" class="block text-6xl font-black text-white leading-none">-</span>
+          <span class="block text-xs uppercase tracking-widest text-zinc-500 mt-2">Kalan</span>
         </div>
       </div>
+
+      <div id="turnBanner" class="text-center py-3 px-4 rounded-lg border border-zinc-800 text-zinc-500 text-sm mb-5"></div>
+
+      <div class="flex justify-center gap-2 mb-1">
+        <input id="moveInput" type="text" placeholder="1  veya  1,2  veya  1,2,3" autocomplete="off"
+          class="bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 w-56">
+        <button onclick="sendMove()"
+          class="bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-semibold text-sm rounded-lg px-5 py-2 transition-colors">
+          Gönder
+        </button>
+      </div>
+      <p id="moveError" class="text-center text-red-400 text-xs min-h-5 mb-5"></p>
+
+      <div id="feed" class="text-center mb-4 min-h-6"></div>
+      <div id="grid" class="flex flex-col gap-2 items-center mt-2"></div>
+
     </div>
-
-    <div id="turnBanner">-</div>
-
-    <div id="moveArea">
-      <input class="ps1-input" id="moveInput" type="text" placeholder="1  veya  1,2  veya  1,2,3" autocomplete="off" style="margin:0;">
-      <button class="ps1-btn is-error" onclick="sendMove()" style="width:auto;">Gönder</button>
-    </div>
-    <div id="moveError"></div>
-
-    <div id="feed"></div>
-    <div id="grid"></div>
   </div>
-
-</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -166,19 +74,20 @@ document.getElementById("roomCode").innerText = roomCode
 
 function showOverlay(html) {
   document.getElementById("overlayBox").innerHTML = html
-  document.getElementById("overlay").classList.add("show")
+  document.getElementById("overlay").classList.remove("hidden")
 }
 function hideOverlay() {
-  document.getElementById("overlay").classList.remove("show")
+  document.getElementById("overlay").classList.add("hidden")
 }
 
 if (!playerName) {
   showOverlay(`
-    <h2>HOŞ GELDİN</h2>
-    <p>Adınız ne?</p>
-    <input class="ps1-input" id="nameInput" type="text" placeholder="isminiz..." maxlength="20">
-    <div id="overlayErr"></div>
-    <button class="ps1-btn is-primary" onclick="saveName()" style="width:100%">Devam</button>
+    <h2 class="text-lg font-bold mb-2">Hoş Geldin</h2>
+    <p class="text-zinc-400 text-sm mb-4">Adınız ne?</p>
+    <input id="nameInput" type="text" placeholder="isminiz..." maxlength="20"
+      class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-2">
+    <p id="overlayErr" class="text-red-400 text-xs min-h-4 mb-3"></p>
+    <button onclick="saveName()" class="w-full bg-white text-zinc-950 font-semibold text-sm rounded-lg py-2.5 hover:bg-zinc-200 transition-colors">Devam</button>
   `)
 } else {
   joinRoom()
@@ -199,9 +108,9 @@ function joinRoom() {
 
 socket.on("errorMessage", msg => {
   showOverlay(`
-    <h2>HATA</h2>
-    <p>${msg}</p>
-    <button class="ps1-btn" onclick="window.location='/'" style="width:100%">Geri Dön</button>
+    <h2 class="text-lg font-bold mb-2">Hata</h2>
+    <p class="text-zinc-400 text-sm mb-5">${msg}</p>
+    <button onclick="window.location='/'" class="w-full bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-semibold text-sm rounded-lg py-2.5 transition-colors">Geri Dön</button>
   `)
 })
 
@@ -210,16 +119,16 @@ socket.on("playerEliminated", ({ name }) => addFeed(`💀 ${name} elendi`))
 
 socket.on("gameOver", ({ winner, reason }) => {
   const isMe = winner === playerName
-  const title = isMe ? "KAZANDIN!" : "OYUN BİTTİ"
+  const title = isMe ? "🏆 Kazandın!" : "Oyun Bitti"
   const sub = reason === "opponent_left"
     ? (isMe ? "Rakip ayrıldı." : `Rakip ayrıldı. Kazanan: ${winner}`)
     : (isMe ? "Tebrikler!" : `Kazanan: ${winner}`)
   showOverlay(`
-    <h2>${title}</h2>
-    <p>${sub}</p>
-    <div class="btn-row">
-      <button class="ps1-btn is-success" onclick="location.reload()">Tekrar</button>
-      <button class="ps1-btn" onclick="window.location='/'">Menü</button>
+    <h2 class="text-lg font-bold mb-1">${title}</h2>
+    <p class="text-zinc-400 text-sm mb-6">${sub}</p>
+    <div class="flex gap-2">
+      <button onclick="location.reload()" class="flex-1 bg-white text-zinc-950 font-semibold text-sm rounded-lg py-2.5 hover:bg-zinc-200 transition-colors">Tekrar</button>
+      <button onclick="window.location='/'" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-semibold text-sm rounded-lg py-2.5 transition-colors">Ana Menü</button>
     </div>
   `)
 })
@@ -236,7 +145,8 @@ function render(data) {
     list.innerHTML = ""
     data.players.forEach(p => {
       const li = document.createElement("li")
-      li.innerHTML = `<span>${p}</span>` + (p === data.host ? `<span class="tag">HOST</span>` : "")
+      li.className = "flex justify-between items-center py-2 text-sm"
+      li.innerHTML = `<span>${p}</span>` + (p === data.host ? `<span class="text-xs text-zinc-500">HOST</span>` : "")
       list.appendChild(li)
     })
 
@@ -260,12 +170,12 @@ function render(data) {
 
   if (isMyTurn) {
     banner.textContent = "⬇ Sıra sende!"
-    banner.className = "my-turn"
+    banner.className = "text-center py-3 px-4 rounded-lg border border-white text-white bg-white/5 text-sm mb-5"
     input.disabled = false
     input.focus()
   } else {
     banner.textContent = `Sıra: ${currentPlayer || ""}`
-    banner.className = ""
+    banner.className = "text-center py-3 px-4 rounded-lg border border-zinc-800 text-zinc-500 text-sm mb-5"
     input.disabled = true
   }
 
@@ -282,27 +192,38 @@ function render(data) {
   let idx = 0
   for (let r = 0; r < data.rows; r++) {
     const row = document.createElement("div")
-    row.className = "grid-row"
+    row.className = "flex gap-2 flex-wrap justify-center"
     for (let c = 0; c < data.cols; c++) {
       const seat = seats[idx]
       const desk = document.createElement("div")
-      desk.className = "desk"
+      desk.className = "w-28 h-20 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center flex-col relative transition-all"
+
       const num = document.createElement("div")
-      num.className = "dnum"
+      num.className = "absolute top-1 right-1.5 text-zinc-600 text-xs"
       num.textContent = idx + 1
       desk.appendChild(num)
+
       if (seat) {
         const nameEl = document.createElement("div")
-        nameEl.className = "dname"
+        nameEl.className = "text-xs text-center px-1 break-all"
         nameEl.textContent = seat.name
         desk.appendChild(nameEl)
+
         if (seat.state === "out") {
-          desk.classList.add("is-out")
+          desk.classList.add("opacity-25")
+          nameEl.classList.add("line-through", "text-zinc-500")
         } else {
-          if (idx === data.currentPlayerIndex) desk.classList.add("is-active")
-          if (seat.name === playerName) desk.classList.add("is-me")
+          if (idx === data.currentPlayerIndex) {
+            desk.classList.remove("border-zinc-800")
+            desk.classList.add("border-white", "bg-white/5")
+          }
+          if (seat.name === playerName) {
+            desk.classList.remove("border-zinc-800")
+            desk.classList.add("border-zinc-400")
+          }
         }
       }
+
       row.appendChild(desk)
       idx++
     }
@@ -313,6 +234,7 @@ function render(data) {
 function addFeed(msg) {
   const feed = document.getElementById("feed")
   const p = document.createElement("p")
+  p.className = "text-red-400 text-xs py-0.5"
   p.textContent = msg
   feed.prepend(p)
   while (feed.children.length > 4) feed.removeChild(feed.lastChild)

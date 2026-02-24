@@ -1,125 +1,62 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eleven</title>
-<link href="https://cdn.jsdelivr.net/npm/psone.css/ps1.css" rel="stylesheet">
-<style>
-* { box-sizing: border-box; }
-body {
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem 1rem;
-  font-family: inherit;
-}
-
-h1 {
-  color: #fff;
-  font-size: 2.5rem;
-  letter-spacing: 0.4rem;
-  text-align: center;
-  margin-bottom: 0.3rem;
-}
-.subtitle {
-  color: #888;
-  font-size: 0.7rem;
-  text-align: center;
-  margin-bottom: 2.5rem;
-  letter-spacing: 0.2rem;
-}
-
-.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 420px;
-}
-
-.ps1-container {
-  padding: 1.5rem;
-}
-
-.ps1-container h2 {
-  font-size: 0.75rem;
-  letter-spacing: 0.15rem;
-  color: #aaa;
-  margin-bottom: 1.2rem;
-  text-transform: uppercase;
-}
-
-label {
-  display: block;
-  font-size: 0.7rem;
-  color: #aaa;
-  margin-bottom: 0.3rem;
-}
-
-.ps1-input, .ps1-select {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.ps1-btn {
-  width: 100%;
-}
-
-.divider {
-  text-align: center;
-  color: #444;
-  font-size: 0.7rem;
-  letter-spacing: 0.2rem;
-}
-
-#errorMsg {
-  display: none;
-  color: #e74c3c;
-  font-size: 0.7rem;
-  text-align: center;
-  margin-top: 1rem;
-}
-</style>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col items-center justify-center px-4 py-12">
 
-<h1>ELEVEN</h1>
-<p class="subtitle">sayı oyunu</p>
-
-<div class="cards">
-
-  <div class="ps1-container is-dark">
-    <h2>Oluştur</h2>
-    <label>İsim</label>
-    <input id="name" class="ps1-input" type="text" maxlength="20" placeholder="adınız...">
-    <label>Sınıf Boyutu</label>
-    <select id="gridSize" class="ps1-select">
-      <option value="5x4">5 × 4 — 20 kişi</option>
-      <option value="5x5">5 × 5 — 25 kişi</option>
-      <option value="4x4">4 × 4 — 16 kişi</option>
-      <option value="6x5">6 × 5 — 30 kişi</option>
-    </select>
-    <button class="ps1-btn is-primary" onclick="createRoom()">Parti Oluştur</button>
+  <div class="mb-10 text-center">
+    <h1 class="text-5xl font-black tracking-widest mb-1">ELEVEN</h1>
+    <p class="text-zinc-500 text-sm">sayı oyunu</p>
   </div>
 
-  <div class="divider">— YA DA —</div>
+  <div class="flex flex-col md:flex-row gap-6 w-full max-w-2xl items-start">
 
-  <div class="ps1-container is-dark">
-    <h2>Katıl</h2>
-    <label>İsim</label>
-    <input id="nameJoin" class="ps1-input" type="text" maxlength="20" placeholder="adınız...">
-    <label>Parti Kodu</label>
-    <input id="code" class="ps1-input" type="text" maxlength="10" placeholder="XXXXX" style="text-transform:uppercase;letter-spacing:0.3rem;">
-    <button class="ps1-btn is-warning" onclick="joinRoom()">Katıl</button>
+    <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+      <h2 class="text-xs uppercase tracking-widest text-zinc-500 mb-5">Oluştur</h2>
+      <label class="block text-xs text-zinc-400 mb-1">İsim</label>
+      <input id="name" type="text" maxlength="20" placeholder="adınız..."
+        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-4">
+      <label class="block text-xs text-zinc-400 mb-1">Sınıf Boyutu</label>
+      <select id="gridSize"
+        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-500 mb-5">
+        <option value="5x4">5 × 4 — 20 kişi</option>
+        <option value="5x5">5 × 5 — 25 kişi</option>
+        <option value="4x4">4 × 4 — 16 kişi</option>
+        <option value="6x5">6 × 5 — 30 kişi</option>
+      </select>
+      <button onclick="createRoom()"
+        class="w-full bg-white text-zinc-950 font-semibold text-sm rounded-lg py-2.5 hover:bg-zinc-200 transition-colors">
+        Parti Oluştur
+      </button>
+    </div>
+
+    <div class="flex md:flex-col items-center gap-2 text-zinc-600 text-xs font-bold self-center">
+      <div class="w-12 h-px md:w-px md:h-12 bg-zinc-800"></div>
+      YA DA
+      <div class="w-12 h-px md:w-px md:h-12 bg-zinc-800"></div>
+    </div>
+
+    <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+      <h2 class="text-xs uppercase tracking-widest text-zinc-500 mb-5">Katıl</h2>
+      <label class="block text-xs text-zinc-400 mb-1">İsim</label>
+      <input id="nameJoin" type="text" maxlength="20" placeholder="adınız..."
+        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-4">
+      <label class="block text-xs text-zinc-400 mb-1">Parti Kodu</label>
+      <input id="code" type="text" maxlength="10" placeholder="XXXXX" autocomplete="off"
+        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-5 uppercase tracking-widest">
+      <button onclick="joinRoom()"
+        class="w-full bg-zinc-700 text-zinc-100 font-semibold text-sm rounded-lg py-2.5 hover:bg-zinc-600 transition-colors">
+        Katıl
+      </button>
+    </div>
+
   </div>
 
-</div>
-
-<p id="errorMsg"></p>
+  <p id="errorMsg" class="hidden mt-5 text-red-400 text-sm text-center"></p>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -128,12 +65,10 @@ const socket = io()
 function showError(msg) {
   const el = document.getElementById("errorMsg")
   el.textContent = msg
-  el.style.display = "block"
+  el.classList.remove("hidden")
 }
 function clearError() {
-  const el = document.getElementById("errorMsg")
-  el.textContent = ""
-  el.style.display = "none"
+  document.getElementById("errorMsg").classList.add("hidden")
 }
 
 function createRoom() {
