@@ -3,144 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eleven</title>
+<title>eleven</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style> body { font-family: 'Inter', sans-serif; } </style>
+<link href="https://unpkg.com/nes.css/css/nes.min.css" rel="stylesheet" id="nesCss" disabled>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  body.classic * { font-family: 'Inter', sans-serif; }
+  body.retro * { font-family: 'Press Start 2P', monospace; }
+
+  /* Classic theme */
+  body.classic { background: #0a0a0a; color: #f5f5f5; }
+  body.classic .card { background: #171717; border: 1px solid #262626; border-radius: 16px; padding: 24px; }
+  body.classic input, body.classic select {
+    background: #262626; border: 1px solid #404040; border-radius: 12px;
+    padding: 10px 16px; font-size: 14px; color: #fff; outline: none; width: 100%;
+    transition: border-color 0.15s;
+  }
+  body.classic input:focus, body.classic select:focus { border-color: #737373; }
+  body.classic .btn-primary {
+    background: #fff; color: #0a0a0a; border: none; border-radius: 12px;
+    padding: 10px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
+    transition: background 0.15s;
+  }
+  body.classic .btn-primary:hover { background: #e5e5e5; }
+  body.classic .btn-secondary {
+    background: #262626; color: #fff; border: 1px solid #404040; border-radius: 12px;
+    padding: 10px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
+    transition: background 0.15s;
+  }
+  body.classic .btn-secondary:hover { background: #333; }
+  body.classic .label { font-size: 12px; color: #737373; margin-bottom: 6px; display: block; }
+  body.classic .section-title { font-size: 11px; color: #525252; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
+  body.classic .divider { background: #262626; }
+  body.classic .divider-text { color: #404040; font-size: 12px; }
+  body.classic .error { color: #f87171; font-size: 13px; text-align: center; margin-top: 12px; }
+  body.classic .icon-btn { background: none; border: none; color: #525252; cursor: pointer; padding: 6px; border-radius: 8px; transition: color 0.15s, background 0.15s; display: flex; align-items: center; }
+  body.classic .icon-btn:hover { color: #fff; background: #262626; }
+  body.classic .modal { background: #171717; border: 1px solid #262626; border-radius: 20px; padding: 24px; width: 100%; max-width: 320px; }
+  body.classic .theme-btn { border: 1px solid #404040; border-radius: 10px; padding: 10px 16px; cursor: pointer; background: #262626; color: #fff; font-size: 13px; transition: all 0.15s; }
+  body.classic .theme-btn:hover { border-color: #737373; }
+  body.classic .theme-btn.active { border-color: #fff; background: #333; }
+
+  /* Retro theme */
+  body.retro { background: #212529; color: #fff; }
+  body.retro .card { padding: 0; background: none; border: none; }
+  body.retro input { font-size: 10px !important; }
+  body.retro .btn-primary, body.retro .btn-secondary { font-size: 10px !important; }
+  body.retro .label { font-size: 8px; color: #aaa; margin-bottom: 6px; display: block; }
+  body.retro .section-title { font-size: 8px; color: #aaa; margin-bottom: 16px; }
+  body.retro .error { font-size: 8px; color: #e76e55; text-align: center; margin-top: 12px; }
+  body.retro .divider-text { font-size: 8px; color: #555; }
+  body.retro .icon-btn { background: none; border: none; color: #aaa; cursor: pointer; padding: 6px; display: flex; align-items: center; }
+  body.retro .modal { background: #212529; border: 4px solid #fff; padding: 24px; width: 100%; max-width: 320px; }
+  body.retro .theme-btn { border: 4px solid #555; padding: 8px 12px; cursor: pointer; background: #333; color: #fff; font-size: 8px; transition: all 0.15s; font-family: 'Press Start 2P', monospace; }
+  body.retro .theme-btn.active { border-color: #92cc41; }
+</style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col items-center justify-center px-4 py-12">
+<body class="classic min-h-screen flex flex-col p-6">
 
-  <div class="mb-10 text-center">
-    <h1 class="text-3xl font-semibold tracking-tight mb-1">Eleven</h1>
-    <p class="text-zinc-500 text-sm">sayı oyunu</p>
-  </div>
-
-  <div class="flex flex-col md:flex-row gap-6 w-full max-w-2xl items-start">
-
-    <!-- Oluştur -->
-    <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-      <h2 class="text-xs text-zinc-500 mb-5">Oluştur</h2>
-
-      <label class="block text-xs text-zinc-400 mb-1">İsim</label>
-      <input id="name" type="text" maxlength="20" placeholder="adınız..."
-        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-4">
-
-      <label class="block text-xs text-zinc-400 mb-1">Sınıf boyutu</label>
-      <select id="gridSize"
-        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-500 mb-4">
-        <option value="5x4">5 × 4 — 20 kişi</option>
-        <option value="5x5">5 × 5 — 25 kişi</option>
-        <option value="4x4">4 × 4 — 16 kişi</option>
-        <option value="6x5">6 × 5 — 30 kişi</option>
-      </select>
-
-      <label class="block text-xs text-zinc-400 mb-1">Görünürlük</label>
-      <div class="flex gap-2 mb-5">
-        <button id="btnPublic" onclick="setVisibility('public')"
-          class="flex-1 text-sm py-2 rounded-lg border border-zinc-500 bg-zinc-700 text-zinc-100 transition-colors">
-          Herkese açık
-        </button>
-        <button id="btnPrivate" onclick="setVisibility('private')"
-          class="flex-1 text-sm py-2 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition-colors">
-          Gizli
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+    <div class="modal">
+      <div class="flex justify-between items-center mb-5">
+        <span style="font-size:14px; font-weight:600;">ayarlar</span>
+        <button class="icon-btn" onclick="closeSettings()">
+          <i data-lucide="x" style="width:16px;height:16px;"></i>
         </button>
       </div>
-
-      <button onclick="createRoom()"
-        class="w-full bg-white text-zinc-950 font-medium text-sm rounded-lg py-2.5 hover:bg-zinc-200 transition-colors">
-        Parti oluştur
-      </button>
+      <p class="label">tema</p>
+      <div style="display:flex; gap:8px;">
+        <button class="theme-btn flex-1" id="btnClassic" onclick="setTheme('classic')">klasik</button>
+        <button class="theme-btn flex-1" id="btnRetro" onclick="setTheme('retro')">retro</button>
+      </div>
     </div>
-
-    <!-- Ayraç -->
-    <div class="flex md:flex-col items-center gap-2 text-zinc-700 text-xs self-center">
-      <div class="w-10 h-px md:w-px md:h-10 bg-zinc-800"></div>
-      ya da
-      <div class="w-10 h-px md:w-px md:h-10 bg-zinc-800"></div>
-    </div>
-
-    <!-- Katıl -->
-    <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-      <h2 class="text-xs text-zinc-500 mb-5">Katıl</h2>
-
-      <label class="block text-xs text-zinc-400 mb-1">İsim</label>
-      <input id="nameJoin" type="text" maxlength="20" placeholder="adınız..."
-        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-4">
-
-      <label class="block text-xs text-zinc-400 mb-1">Parti kodu</label>
-      <input id="code" type="text" maxlength="10" placeholder="xxxxx" autocomplete="off"
-        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-500 mb-5 uppercase tracking-widest">
-
-      <button onclick="joinRoom()"
-        class="w-full bg-zinc-700 text-zinc-100 font-medium text-sm rounded-lg py-2.5 hover:bg-zinc-600 transition-colors mb-3">
-        Katıl
-      </button>
-
-      <a href="/page.html"
-        class="block w-full text-center text-zinc-500 text-sm py-2 rounded-lg border border-zinc-800 hover:border-zinc-600 hover:text-zinc-300 transition-colors">
-        Açık partileri gör
-      </a>
-    </div>
-
   </div>
 
-  <p id="errorMsg" class="hidden mt-5 text-red-400 text-sm text-center"></p>
+  <!-- Header -->
+  <header style="display:flex; justify-content:space-between; align-items:center; max-width:672px; width:100%; margin:0 auto 32px;">
+    <div>
+      <p id="titleText" style="font-size:24px; font-weight:600; margin:0 0 2px;">eleven</p>
+      <p class="label" style="margin:0;">sayı oyunu</p>
+    </div>
+    <button class="icon-btn" onclick="openSettings()">
+      <i data-lucide="settings" style="width:20px;height:20px;"></i>
+    </button>
+  </header>
 
+  <!-- Main -->
+  <main style="max-width:672px; width:100%; margin:0 auto; flex:1;">
+    <div style="display:flex; gap:16px; align-items:stretch; flex-wrap:wrap;">
+
+      <!-- Create -->
+      <div class="card" style="flex:1; min-width:220px; display:flex; flex-direction:column;">
+        <p class="section-title">parti oluştur</p>
+        <div style="display:flex; flex-direction:column; gap:16px; flex:1;">
+          <div>
+            <label class="label">isim</label>
+            <input id="name" type="text" maxlength="20" placeholder="adınız">
+          </div>
+          <div>
+            <label class="label">sınıf boyutu</label>
+            <select id="gridSize">
+              <option value="5x4">5 × 4 — 20 kişi</option>
+              <option value="5x5">5 × 5 — 25 kişi</option>
+              <option value="4x4">4 × 4 — 16 kişi</option>
+              <option value="6x5">6 × 5 — 30 kişi</option>
+            </select>
+          </div>
+          <button class="btn-primary" style="margin-top:auto;" onclick="createRoom()">oluştur</button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div id="divider" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 0;">
+        <div class="divider" style="width:1px; flex:1;"></div>
+        <span class="divider-text">ya da</span>
+        <div class="divider" style="width:1px; flex:1;"></div>
+      </div>
+
+      <!-- Join -->
+      <div class="card" style="flex:1; min-width:220px; display:flex; flex-direction:column;">
+        <p class="section-title">partiye katıl</p>
+        <div style="display:flex; flex-direction:column; gap:16px; flex:1;">
+          <div>
+            <label class="label">isim</label>
+            <input id="nameJoin" type="text" maxlength="20" placeholder="adınız">
+          </div>
+          <div>
+            <label class="label">parti kodu</label>
+            <input id="code" type="text" maxlength="10" placeholder="xxxxx" autocomplete="off" style="text-transform:uppercase; letter-spacing:4px;">
+          </div>
+          <button class="btn-secondary" style="margin-top:auto;" onclick="joinRoom()">katıl</button>
+        </div>
+      </div>
+
+    </div>
+    <p id="errorMsg" class="error" style="display:none;"></p>
+  </main>
+
+  <!-- Retro wrapper (only visible in retro mode) -->
+  <div id="retroWrapper" class="hidden"></div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const socket = io()
-let visibility = "public"
+lucide.createIcons()
 
-function setVisibility(val) {
-  visibility = val
-  const pub = document.getElementById("btnPublic")
-  const priv = document.getElementById("btnPrivate")
-  if (val === "public") {
-    pub.className = "flex-1 text-sm py-2 rounded-lg border border-zinc-500 bg-zinc-700 text-zinc-100 transition-colors"
-    priv.className = "flex-1 text-sm py-2 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition-colors"
-  } else {
-    priv.className = "flex-1 text-sm py-2 rounded-lg border border-zinc-500 bg-zinc-700 text-zinc-100 transition-colors"
-    pub.className = "flex-1 text-sm py-2 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition-colors"
-  }
+// Theme
+function getTheme() { return localStorage.getItem("theme") || "classic" }
+function setTheme(t) {
+  localStorage.setItem("theme", t)
+  applyTheme(t)
+  updateThemeBtns(t)
 }
+function applyTheme(t) {
+  document.body.className = t + " min-h-screen flex flex-col p-6"
+  document.getElementById("nesCss").disabled = (t !== "retro")
+
+  if (t === "retro") {
+    document.getElementById("titleText").style.fontSize = "16px"
+    // wrap cards in nes-container
+    document.querySelectorAll(".card").forEach(c => {
+      c.classList.add("nes-container", "is-dark", "with-title")
+    })
+    document.querySelectorAll(".btn-primary").forEach(b => {
+      b.className = "nes-btn is-success"
+      b.style.width = "100%"; b.style.marginTop = "auto"
+    })
+    document.querySelectorAll(".btn-secondary").forEach(b => {
+      b.className = "nes-btn is-warning"
+      b.style.width = "100%"; b.style.marginTop = "auto"
+    })
+    document.querySelectorAll("input, select").forEach(el => {
+      el.classList.add("nes-input", "is-dark")
+    })
+  } else {
+    document.getElementById("titleText").style.fontSize = "24px"
+    document.querySelectorAll(".card").forEach(c => {
+      c.classList.remove("nes-container", "is-dark", "with-title")
+    })
+    document.querySelectorAll(".nes-btn").forEach(b => {
+      if (b.classList.contains("is-success")) {
+        b.className = "btn-primary"
+        b.style.width = "100%"; b.style.marginTop = "auto"
+      } else {
+        b.className = "btn-secondary"
+        b.style.width = "100%"; b.style.marginTop = "auto"
+      }
+    })
+    document.querySelectorAll("input, select").forEach(el => {
+      el.classList.remove("nes-input", "is-dark")
+    })
+  }
+  lucide.createIcons()
+}
+function updateThemeBtns(t) {
+  document.getElementById("btnClassic").classList.toggle("active", t === "classic")
+  document.getElementById("btnRetro").classList.toggle("active", t === "retro")
+}
+function openSettings() {
+  updateThemeBtns(getTheme())
+  document.getElementById("settingsModal").classList.remove("hidden")
+}
+function closeSettings() {
+  document.getElementById("settingsModal").classList.add("hidden")
+}
+
+applyTheme(getTheme())
+
+// Socket
+const socket = io()
 
 function showError(msg) {
   const el = document.getElementById("errorMsg")
   el.textContent = msg
-  el.classList.remove("hidden")
+  el.style.display = "block"
 }
 function clearError() {
-  document.getElementById("errorMsg").classList.add("hidden")
+  document.getElementById("errorMsg").style.display = "none"
 }
 
 function createRoom() {
   clearError()
   const name = document.getElementById("name").value.trim()
-  if (!name) return showError("İsim boş olamaz.")
+  if (!name) return showError("isim boş olamaz")
   const grid = document.getElementById("gridSize").value
   const [cols, rows] = grid.split("x").map(Number)
   localStorage.setItem("playerName", name)
-  socket.emit("createRoom", { name, rows, cols, visibility })
+  socket.emit("createRoom", { name, rows, cols })
 }
 
 function joinRoom() {
   clearError()
   const name = document.getElementById("nameJoin").value.trim()
   const code = document.getElementById("code").value.trim().toUpperCase()
-  if (!name) return showError("İsim boş olamaz.")
-  if (!code) return showError("Parti kodu boş olamaz.")
+  if (!name) return showError("isim boş olamaz")
+  if (!code) return showError("parti kodu boş olamaz")
   localStorage.setItem("playerName", name)
   socket.emit("joinRoom", { name, code })
 }
 
 socket.on("roomCreated", code => {
   const name = document.getElementById("name").value.trim()
-  window.location = `/game.html?room=${code}&name=${encodeURIComponent(name)}`
+  window.location = `/page.html?room=${code}&name=${encodeURIComponent(name)}`
 })
 socket.on("updateRoom", () => {
   const name = document.getElementById("nameJoin").value.trim()
   const code = document.getElementById("code").value.trim().toUpperCase()
-  if (code) window.location = `/game.html?room=${code}&name=${encodeURIComponent(name)}`
+  if (code) window.location = `/page.html?room=${code}&name=${encodeURIComponent(name)}`
 })
 socket.on("errorMessage", msg => showError(msg))
 
