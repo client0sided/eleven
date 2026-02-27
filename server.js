@@ -8,6 +8,11 @@ const io = new Server(server)
 
 app.use(express.static("public"))
 
+// Clean URL: /game?room=XXXXX instead of /page.html?room=XXXXX
+app.get("/game", (req, res) => {
+  res.sendFile(__dirname + "/public/page.html")
+})
+
 let rooms = {}
 
 function safeEmit(socket, event, data) {
@@ -17,7 +22,7 @@ function safeEmit(socket, event, data) {
 
 function broadcast(code) {
   if (!rooms[code]) return
-  const { _deleteTimer, ...roomData } = rooms[code]
+  const { _deleteTimer, socketIds, ...roomData } = rooms[code]
   io.to(code).emit("updateRoom", roomData)
 }
 
@@ -56,39 +61,30 @@ function eliminateCurrentPlayer(code) {
   broadcast(code)
 }
 
-// Public rooms list endpoint
-app.get("/api/rooms", (req, res) => {
-  const publicRooms = Object.entries(rooms)
-    .filter(([, r]) => r.isPublic && !r.started)
-    .map(([code, r]) => ({
-      code,
-      host: r.host,
-      players: r.players.length,
-      maxPlayers: r.rows * r.cols,
-    }))
-  res.json(publicRooms)
-})
-
 io.on("connection", (socket) => {
   console.log(`[+] Connected: ${socket.id}`)
 
   socket.on("createRoom", (payload = {}) => {
     try {
-      let { name, rows, cols, visibility } = payload
+      let { name, rows, cols } = payload
       if (!name || typeof name !== "string" || name.trim() === "")
         return safeEmit(socket, "errorMessage", "Geçersiz isim")
       name = name.trim()
+
       if (!isValidInt(rows, 1, 20) || !isValidInt(cols, 1, 20))
         return safeEmit(socket, "errorMessage", "Geçersiz sınıf boyutu")
       rows = Number(rows)
       cols = Number(cols)
-      const isPublic = visibility !== "private"
+      if (rows * cols < 2)
+        return safeEmit(socket, "errorMessage", "Oda en az 2 kişilik olmalı")
+
       const code = Math.random().toString(36).substring(2, 7).toUpperCase()
       rooms[code] = {
         players: [name], eliminated: [],
         currentNumber: 0, currentPlayerIndex: 0,
         started: false, host: name, rows, cols,
-        isPublic, _deleteTimer: null,
+        socketIds: { [name]: socket.id },
+        _deleteTimer: null,
       }
       socket.join(code)
       socket.roomCode = code
@@ -111,18 +107,26 @@ io.on("connection", (socket) => {
       if (!rooms[code])
         return safeEmit(socket, "errorMessage", "Oda bulunamadı")
       const room = rooms[code]
+
       if (room._deleteTimer) {
         clearTimeout(room._deleteTimer)
         room._deleteTimer = null
         console.log(`[${code}] Deletion cancelled`)
       }
+
       if (room.started && !room.players.includes(name) && !room.eliminated.includes(name))
         return safeEmit(socket, "errorMessage", "Oyun zaten başladı")
+
+      if (room.players.includes(name) && room.socketIds[name] !== socket.id)
+        return safeEmit(socket, "errorMessage", "Bu isim zaten kullanımda")
+
       if (!room.players.includes(name)) {
         if (room.players.length >= room.rows * room.cols)
           return safeEmit(socket, "errorMessage", "Oda dolu")
         room.players.push(name)
       }
+
+      room.socketIds[name] = socket.id
       socket.join(code)
       socket.roomCode = code
       socket.playerName = name
@@ -159,14 +163,19 @@ io.on("connection", (socket) => {
       if (room.players[room.currentPlayerIndex] !== socket.playerName) return
       if (!Array.isArray(numbers)) return
       if (numbers.length === 0 || numbers.length > 3) return
+
       const current = room.currentNumber
+
       for (let i = 0; i < numbers.length; i++) {
         if (typeof numbers[i] !== "number" || !Number.isInteger(numbers[i])) return
         if (numbers[i] !== current + i + 1) return
-        if (numbers[i] >= 11) return
       }
+
       const last = numbers[numbers.length - 1]
+      if (last > 10) return
+
       room.currentNumber = last
+
       if (last === 10) {
         room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length
         console.log(`[${code}] ${socket.playerName} said 10 — ${room.players[room.currentPlayerIndex]} is forced out`)
@@ -178,7 +187,6 @@ io.on("connection", (socket) => {
     } catch (err) { console.error("move error:", err) }
   })
 
-
   socket.on("disconnect", () => {
     try {
       const code = socket.roomCode
@@ -188,12 +196,23 @@ io.on("connection", (socket) => {
         return
       }
       const room = rooms[code]
+
+      if (room.socketIds[name] !== socket.id) {
+        console.log(`[-] Stale disconnect ignored: ${socket.id} ${name}`)
+        return
+      }
+
       if (!room.players.includes(name)) {
         console.log(`[-] Disconnected (not in players): ${socket.id} ${name}`)
         return
       }
+
       room.players = room.players.filter((p) => p !== name)
+      delete room.socketIds[name]
+      room.eliminated = room.eliminated.filter((p) => p !== name)
+
       console.log(`[-] Disconnected: ${name} | Room: ${code} | Left: ${room.players.length}`)
+
       if (room.players.length === 0) {
         room._deleteTimer = setTimeout(() => {
           if (rooms[code] && rooms[code].players.length === 0) {
@@ -223,6 +242,3 @@ io.on("connection", (socket) => {
 })
 
 server.listen(3000, () => { console.log("Server running on port 3000") })
-app.get("/game", (req, res) => {
-  res.sendFile(__dirname + "/public/page.html")
-})
