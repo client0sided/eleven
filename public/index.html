@@ -4,279 +4,450 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eleven</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://unpkg.com/nes.css/css/nes.min.css" rel="stylesheet" id="nesCss" disabled>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-  body.classic * { font-family: 'Inter', sans-serif; }
-  body.retro * { font-family: 'Press Start 2P', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Roboto', sans-serif; background: #121212; color: #fff; min-height: 100vh; }
 
-  body.classic { background: #0a0a0a; color: #f5f5f5; }
-  body.retro   { background: #212529; color: #fff; }
-
-  .card {
-    background: #171717; border: 1px solid #262626; border-radius: 16px; padding: 24px;
+  /* MUI-style tokens */
+  :root {
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --surface2: #2a2a2a;
+    --border: #333;
+    --primary: #90caf9;
+    --primary-dark: #42a5f5;
+    --text-secondary: #aaa;
+    --error: #f44336;
+    --radius: 4px;
   }
-  body.retro .card { background: transparent; border: none; border-radius: 0; padding: 0; }
 
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .label { font-size: 12px; color: #737373; }
-  body.retro .label { font-size: 8px; color: #aaa; }
-
-  input, select {
-    background: #262626; border: 1px solid #404040; border-radius: 12px;
-    padding: 10px 16px; font-size: 14px; color: #fff; outline: none; width: 100%;
-    box-sizing: border-box; transition: border-color 0.15s;
+  /* Layout */
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+  .appbar {
+    background: #1e1e1e;
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-  input:focus, select:focus { border-color: #737373; }
-  body.retro input, body.retro select { font-size: 10px !important; border-radius: 0; }
+  .appbar-title { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
+  .appbar-actions { display: flex; align-items: center; gap: 4px; }
+  .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
 
-  .btn-primary {
-    background: #fff; color: #0a0a0a; border: none; border-radius: 12px;
-    padding: 10px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
-    transition: background 0.15s; margin-top: auto;
+  /* Cards */
+  .paper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
   }
-  .btn-primary:hover { background: #e5e5e5; }
-  .btn-secondary {
-    background: #262626; color: #fff; border: 1px solid #404040; border-radius: 12px;
-    padding: 10px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
-    transition: background 0.15s; margin-top: auto;
-  }
-  .btn-secondary:hover { background: #333; }
-  body.retro .btn-primary  { font-size: 10px !important; border-radius: 0; }
-  body.retro .btn-secondary { font-size: 10px !important; border-radius: 0; }
 
+  /* Inputs */
+  .field { display: flex; flex-direction: column; margin-bottom: 16px; }
+  .field label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .field input, .field select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 16px;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus { border-color: var(--primary); }
+  .field select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 36px; }
+  .select-wrap { position: relative; }
+  .select-wrap .chevron { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-secondary); font-size: 20px; }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 24px; border: none; border-radius: var(--radius);
+    font-size: 14px; font-weight: 500; font-family: 'Roboto', sans-serif;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em;
+    transition: background 0.2s, box-shadow 0.2s; width: 100%;
+  }
+  .btn-contained { background: var(--primary); color: #000; }
+  .btn-contained:hover { background: var(--primary-dark); box-shadow: 0 2px 8px rgba(144,202,249,0.3); }
+  .btn-outlined { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-outlined:hover { background: rgba(144,202,249,0.08); }
+  .btn-text { background: none; color: var(--primary); border: none; padding: 8px 16px; width: auto; }
+  .btn-text:hover { background: rgba(144,202,249,0.08); border-radius: var(--radius); }
+
+  /* Icon buttons */
   .icon-btn {
-    background: none; border: none; color: #525252; cursor: pointer;
-    padding: 7px; border-radius: 8px; display: flex; align-items: center;
-    transition: color 0.15s, background 0.15s;
+    background: none; border: none; color: #aaa; cursor: pointer;
+    padding: 8px; border-radius: 50%; display: flex; align-items: center;
+    transition: background 0.2s, color 0.2s;
   }
-  .icon-btn:hover { color: #fff; background: #1f1f1f; }
-  .icon-btn.active { color: #fff; background: #1f1f1f; }
-  body.retro .icon-btn { border-radius: 0; }
+  .icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .icon-btn.active { color: var(--primary); }
 
-  .modal-bg {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-    z-index: 50; align-items: center; justify-content: center; padding: 16px;
-  }
-  .modal-bg.open { display: flex; }
-  .modal {
-    background: #171717; border: 1px solid #262626; border-radius: 20px;
-    padding: 24px; width: 100%; max-width: 340px;
-  }
-  body.retro .modal { background: #212529; border: 4px solid #fff; border-radius: 0; }
+  /* Divider */
+  .divider-v { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 8px; }
+  .divider-v .line { background: var(--border); width: 1px; flex: 1; }
+  .divider-v span { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
 
-  .theme-btn {
-    border: 1px solid #404040; border-radius: 10px; padding: 10px 16px;
-    cursor: pointer; background: #262626; color: #fff; font-size: 13px;
-    transition: all 0.15s; flex: 1;
-  }
-  .theme-btn:hover { border-color: #737373; }
-  .theme-btn.active { border-color: #fff; background: #333; }
-  body.retro .theme-btn { border-radius: 0; font-size: 8px !important; font-family: 'Press Start 2P', monospace; }
-  body.retro .theme-btn.active { border-color: #92cc41; border-width: 4px; }
+  /* Error */
+  .error-text { font-size: 13px; color: var(--error); text-align: center; margin-top: 12px; display: none; }
 
-  .error { color: #f87171; font-size: 13px; text-align: center; margin-top: 12px; display: none; }
-  body.retro .error { font-size: 8px; }
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 100%; max-width: 380px; }
+  .modal-title { font-size: 18px; font-weight: 500; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
 
-  .section-title { font-size: 11px; color: #525252; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
-  body.retro .section-title { font-size: 8px; color: #aaa; }
+  /* Server list */
+  .server-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+  .server-item:last-child { border-bottom: none; }
 
-  .divider-line { background: #262626; }
-  .divider-text { color: #404040; font-size: 12px; }
-  body.retro .divider-text { font-size: 8px; color: #555; }
+  /* Language menu */
+  .lang-menu { position: absolute; top: 56px; right: 16px; background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; min-width: 140px; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+  .lang-item { padding: 10px 16px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
+  .lang-item:hover { background: rgba(255,255,255,0.06); }
+  .lang-item.active { color: var(--primary); }
+  .flag { font-size: 18px; }
 </style>
 </head>
-<body class="classic min-h-screen flex flex-col p-5">
+<body>
 
-  <!-- Party Modal -->
-  <div id="partyModal" class="modal-bg">
-    <div class="modal" style="max-width:520px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <span style="font-weight:600; font-size:15px;">parti</span>
-        <button class="icon-btn" onclick="closeParty()">
-          <i data-lucide="x" style="width:16px;height:16px;"></i>
-        </button>
-      </div>
-      <div style="display:flex; gap:16px; align-items:stretch; flex-wrap:wrap;">
-        <!-- Create -->
-        <div style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:16px;">
-          <p class="section-title" style="margin-bottom:0;">oluştur</p>
-          <div class="field">
-            <label class="label">isim</label>
-            <input id="name" type="text" maxlength="20" placeholder="adınız">
-          </div>
-          <div class="field">
-            <label class="label">sınıf boyutu</label>
-            <select id="gridSize">
-              <option value="5x4">5 × 4 — 20 kişi</option>
-              <option value="5x5">5 × 5 — 25 kişi</option>
-              <option value="4x4">4 × 4 — 16 kişi</option>
-              <option value="6x5">6 × 5 — 30 kişi</option>
-            </select>
-          </div>
-          <button class="btn-primary" onclick="createRoom()">oluştur</button>
-        </div>
-
-        <!-- Divider -->
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0;">
-          <div class="divider-line" style="width:1px; flex:1;"></div>
-          <span class="divider-text">ya da</span>
-          <div class="divider-line" style="width:1px; flex:1;"></div>
-        </div>
-
-        <!-- Join -->
-        <div style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:16px;">
-          <p class="section-title" style="margin-bottom:0;">katıl</p>
-          <div class="field">
-            <label class="label">isim</label>
-            <input id="nameJoin" type="text" maxlength="20" placeholder="adınız">
-          </div>
-          <div class="field">
-            <label class="label">parti kodu</label>
-            <input id="code" type="text" maxlength="10" placeholder="xxxxx" autocomplete="off" style="text-transform:uppercase; letter-spacing:4px;">
-          </div>
-          <button class="btn-secondary" onclick="joinRoom()">katıl</button>
-        </div>
-      </div>
-      <p id="errorMsg" class="error"></p>
-    </div>
-  </div>
-
-  <!-- Settings Modal -->
-  <div id="settingsModal" class="modal-bg">
-    <div class="modal">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <span style="font-weight:600; font-size:15px;">ayarlar</span>
-        <button class="icon-btn" onclick="closeSettings()">
-          <i data-lucide="x" style="width:16px;height:16px;"></i>
-        </button>
-      </div>
-      <p class="label" style="margin-bottom:8px;">tema</p>
-      <div style="display:flex; gap:8px;">
-        <button class="theme-btn" id="btnClassic" onclick="setTheme('classic')">klasik</button>
-        <button class="theme-btn" id="btnRetro" onclick="setTheme('retro')">retro</button>
+<!-- Server Modal -->
+<div id="serverModal" class="modal-overlay">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-title">
+      <span id="t-open-rooms">açık odalar</span>
+      <div style="display:flex;gap:4px;">
+        <button class="icon-btn" onclick="loadRooms()" title="yenile"><span class="material-icons" style="font-size:20px;">refresh</span></button>
+        <button class="icon-btn" onclick="closeServers()"><span class="material-icons" style="font-size:20px;">close</span></button>
       </div>
     </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label id="t-your-name-s">ismin</label>
+      <input id="serverName" type="text" maxlength="20">
+    </div>
+    <div id="roomList" style="min-height:60px;"><p style="font-size:13px;color:#777;text-align:center;padding:20px 0;" id="t-loading">yükleniyor...</p></div>
+    <p id="serverError" class="error-text"></p>
   </div>
+</div>
 
-  <!-- Header -->
-  <header style="display:flex; justify-content:space-between; align-items:center; max-width:900px; width:100%; margin:0 auto 40px;">
-    <span style="font-size:20px; font-weight:600;">eleven</span>
-    <div style="display:flex; gap:4px;">
-      <button class="icon-btn" id="partyBtn" onclick="openParty()" title="parti">
-        <i data-lucide="layout-grid" style="width:20px;height:20px;"></i>
+<!-- Language Menu -->
+<div id="langMenu" class="lang-menu" style="display:none;">
+  <div class="lang-item" data-lang="tr" onclick="setLang('tr')"><span class="flag">🇹🇷</span> Türkçe</div>
+  <div class="lang-item" data-lang="en" onclick="setLang('en')"><span class="flag">🇬🇧</span> English</div>
+  <div class="lang-item" data-lang="de" onclick="setLang('de')"><span class="flag">🇩🇪</span> Deutsch</div>
+  <div class="lang-item" data-lang="es" onclick="setLang('es')"><span class="flag">🇪🇸</span> Español</div>
+</div>
+
+<div class="app">
+  <!-- AppBar -->
+  <header class="appbar">
+    <span class="appbar-title">eleven</span>
+    <div class="appbar-actions">
+      <button class="icon-btn" id="serverBtn" onclick="openServers()" title="açık odalar">
+        <span class="material-icons">dns</span>
       </button>
-      <button class="icon-btn" id="settingsBtn" onclick="openSettings()" title="ayarlar">
-        <i data-lucide="settings" style="width:20px;height:20px;"></i>
+      <button class="icon-btn" id="langBtn" onclick="toggleLangMenu()">
+        <span id="langFlag" style="font-size:20px;">🇹🇷</span>
       </button>
     </div>
   </header>
 
-  <!-- Main content -->
-  <main style="max-width:900px; width:100%; margin:0 auto; flex:1; display:flex; align-items:center; justify-content:center;">
-    <div style="text-align:center;">
-      <p style="font-size:48px; font-weight:600; margin:0 0 8px; letter-spacing:-2px;">eleven</p>
-      <p style="font-size:14px; color:#525252; margin:0 0 32px;">sayı oyunu</p>
-      <button class="btn-primary" style="width:auto; padding:10px 32px; border-radius:12px;" onclick="openParty()">
-        başla
-      </button>
+  <!-- Main -->
+  <main class="main">
+    <div style="width:100%;max-width:680px;">
+      <div style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;">
+
+        <!-- Create -->
+        <div class="paper" style="flex:1;min-width:240px;display:flex;flex-direction:column;">
+          <p style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;" id="t-create-title">parti oluştur</p>
+          <div style="flex:1;display:flex;flex-direction:column;">
+            <div class="field">
+              <label id="t-name-label">isim</label>
+              <input id="name" type="text" maxlength="20">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label id="t-size-label">sınıf boyutu</label>
+              <div class="select-wrap">
+                <select id="gridSize">
+                  <option value="5x4">5 × 4 — 20</option>
+                  <option value="5x5">5 × 5 — 25</option>
+                  <option value="4x4">4 × 4 — 16</option>
+                  <option value="6x5">6 × 5 — 30</option>
+                </select>
+                <span class="material-icons chevron">expand_more</span>
+              </div>
+            </div>
+            <button class="btn btn-contained" style="margin-top:auto;padding-top:14px;" onclick="createRoom()" id="t-create-btn">oluştur</button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider-v">
+          <div class="line"></div>
+          <span id="t-or">ya da</span>
+          <div class="line"></div>
+        </div>
+
+        <!-- Join -->
+        <div class="paper" style="flex:1;min-width:240px;display:flex;flex-direction:column;">
+          <p style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;" id="t-join-title">partiye katıl</p>
+          <div style="flex:1;display:flex;flex-direction:column;">
+            <div class="field">
+              <label id="t-name-label2">isim</label>
+              <input id="nameJoin" type="text" maxlength="20">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label id="t-code-label">parti kodu</label>
+              <input id="code" type="text" maxlength="10" autocomplete="off" style="text-transform:uppercase;letter-spacing:4px;">
+            </div>
+            <button class="btn btn-outlined" style="margin-top:auto;padding-top:14px;" onclick="joinRoom()" id="t-join-btn">katıl</button>
+          </div>
+        </div>
+
+      </div>
+      <p id="errorMsg" class="error-text"></p>
     </div>
   </main>
+</div>
 
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-lucide.createIcons()
+// === TRANSLATIONS ===
+const i18n = {
+  tr: {
+    subtitle: 'sayı oyunu',
+    createTitle: 'parti oluştur',
+    joinTitle: 'partiye katıl',
+    nameLbl: 'isim',
+    sizeLbl: 'sınıf boyutu',
+    codeLbl: 'parti kodu',
+    createBtn: 'oluştur',
+    joinBtn: 'katıl',
+    or: 'ya da',
+    openRooms: 'açık odalar',
+    yourName: 'ismin',
+    loading: 'yükleniyor...',
+    noRooms: 'açık oda yok',
+    loadFail: 'yüklenemedi',
+    nameEmpty: 'isim boş olamaz',
+    codeEmpty: 'parti kodu boş olamaz',
+    enterName: 'önce isim gir',
+    room: 'odası',
+    players: 'oyuncu',
+    joinRoomBtn: 'katıl',
+    placeholder: 'adınız',
+    codePlaceholder: 'xxxxx',
+  },
+  en: {
+    subtitle: 'number game',
+    createTitle: 'create party',
+    joinTitle: 'join party',
+    nameLbl: 'name',
+    sizeLbl: 'class size',
+    codeLbl: 'party code',
+    createBtn: 'create',
+    joinBtn: 'join',
+    or: 'or',
+    openRooms: 'open rooms',
+    yourName: 'your name',
+    loading: 'loading...',
+    noRooms: 'no open rooms',
+    loadFail: 'failed to load',
+    nameEmpty: 'name cannot be empty',
+    codeEmpty: 'party code cannot be empty',
+    enterName: 'enter your name first',
+    room: "'s room",
+    players: 'players',
+    joinRoomBtn: 'join',
+    placeholder: 'your name',
+    codePlaceholder: 'xxxxx',
+  },
+  de: {
+    subtitle: 'Zahlenspiel',
+    createTitle: 'Party erstellen',
+    joinTitle: 'Party beitreten',
+    nameLbl: 'Name',
+    sizeLbl: 'Klassengröße',
+    codeLbl: 'Party-Code',
+    createBtn: 'Erstellen',
+    joinBtn: 'Beitreten',
+    or: 'oder',
+    openRooms: 'Offene Räume',
+    yourName: 'Dein Name',
+    loading: 'Wird geladen...',
+    noRooms: 'Keine offenen Räume',
+    loadFail: 'Laden fehlgeschlagen',
+    nameEmpty: 'Name darf nicht leer sein',
+    codeEmpty: 'Party-Code darf nicht leer sein',
+    enterName: 'Zuerst Namen eingeben',
+    room: 's Raum',
+    players: 'Spieler',
+    joinRoomBtn: 'Beitreten',
+    placeholder: 'Ihr Name',
+    codePlaceholder: 'xxxxx',
+  },
+  es: {
+    subtitle: 'juego de números',
+    createTitle: 'crear partida',
+    joinTitle: 'unirse a partida',
+    nameLbl: 'nombre',
+    sizeLbl: 'tamaño de clase',
+    codeLbl: 'código de partida',
+    createBtn: 'crear',
+    joinBtn: 'unirse',
+    or: 'o',
+    openRooms: 'salas abiertas',
+    yourName: 'tu nombre',
+    loading: 'cargando...',
+    noRooms: 'no hay salas abiertas',
+    loadFail: 'error al cargar',
+    nameEmpty: 'el nombre no puede estar vacío',
+    codeEmpty: 'el código no puede estar vacío',
+    enterName: 'primero ingresa tu nombre',
+    room: ' sala',
+    players: 'jugadores',
+    joinRoomBtn: 'unirse',
+    placeholder: 'tu nombre',
+    codePlaceholder: 'xxxxx',
+  }
+}
 
-// Theme
-function getTheme() { return localStorage.getItem("theme") || "classic" }
-function setTheme(t) {
-  localStorage.setItem("theme", t)
-  applyTheme(t)
-  updateThemeBtns(t)
+const flags = { tr: '🇹🇷', en: '🇬🇧', de: '🇩🇪', es: '🇪🇸' }
+
+function getLang() { return localStorage.getItem('lang') || 'tr' }
+function setLang(l) {
+  localStorage.setItem('lang', l)
+  applyLang(l)
+  closeLangMenu()
 }
-function applyTheme(t) {
-  document.body.className = t + " min-h-screen flex flex-col p-5"
-  document.getElementById("nesCss").disabled = (t !== "retro")
-  lucide.createIcons()
-}
-function updateThemeBtns(t) {
-  document.getElementById("btnClassic").classList.toggle("active", t === "classic")
-  document.getElementById("btnRetro").classList.toggle("active", t === "retro")
+function applyLang(l) {
+  const t = i18n[l]
+  document.getElementById('langFlag').textContent = flags[l]
+  document.querySelectorAll('.lang-item').forEach(el => el.classList.toggle('active', el.dataset.lang === l))
+  document.getElementById('t-create-title').textContent = t.createTitle
+  document.getElementById('t-join-title').textContent = t.joinTitle
+  document.getElementById('t-name-label').textContent = t.nameLbl
+  document.getElementById('t-name-label2').textContent = t.nameLbl
+  document.getElementById('t-size-label').textContent = t.sizeLbl
+  document.getElementById('t-code-label').textContent = t.codeLbl
+  document.getElementById('t-create-btn').textContent = t.createBtn
+  document.getElementById('t-join-btn').textContent = t.joinBtn
+  document.getElementById('t-or').textContent = t.or
+  document.getElementById('t-open-rooms').textContent = t.openRooms
+  document.getElementById('t-your-name-s').textContent = t.yourName
+  document.getElementById('name').placeholder = t.placeholder
+  document.getElementById('nameJoin').placeholder = t.placeholder
+  document.getElementById('serverName').placeholder = t.placeholder
+  document.getElementById('code').placeholder = t.codePlaceholder
+  document.title = 'eleven — ' + t.subtitle
 }
 
-function openParty() {
-  document.getElementById("partyModal").classList.add("open")
-  document.getElementById("partyBtn").classList.add("active")
+function toggleLangMenu() {
+  const m = document.getElementById('langMenu')
+  m.style.display = m.style.display === 'none' ? 'block' : 'none'
 }
-function closeParty() {
-  document.getElementById("partyModal").classList.remove("open")
-  document.getElementById("partyBtn").classList.remove("active")
+function closeLangMenu() { document.getElementById('langMenu').style.display = 'none' }
+document.addEventListener('click', e => {
+  if (!document.getElementById('langBtn').contains(e.target)) closeLangMenu()
+})
+
+// Init
+applyLang(getLang())
+
+// Server list
+function openServers() {
+  document.getElementById('serverModal').classList.add('open')
+  document.getElementById('serverBtn').classList.add('active')
+  loadRooms()
 }
-function openSettings() {
-  updateThemeBtns(getTheme())
-  document.getElementById("settingsModal").classList.add("open")
-  document.getElementById("settingsBtn").classList.add("active")
+function closeServers() {
+  document.getElementById('serverModal').classList.remove('open')
+  document.getElementById('serverBtn').classList.remove('active')
 }
-function closeSettings() {
-  document.getElementById("settingsModal").classList.remove("open")
-  document.getElementById("settingsBtn").classList.remove("active")
+document.getElementById('serverModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeServers() })
+
+async function loadRooms() {
+  const t = i18n[getLang()]
+  const list = document.getElementById('roomList')
+  list.innerHTML = `<p style="font-size:13px;color:#777;text-align:center;padding:20px 0;">${t.loading}</p>`
+  try {
+    const rooms = await fetch('/rooms').then(r => r.json())
+    if (!rooms.length) { list.innerHTML = `<p style="font-size:13px;color:#777;text-align:center;padding:20px 0;">${t.noRooms}</p>`; return }
+    list.innerHTML = ''
+    rooms.forEach(r => {
+      const item = document.createElement('div')
+      item.className = 'server-item'
+      const roomLabel = getLang() === 'tr' ? `${r.host}'${r.host.slice(-1) === 'i' || r.host.slice(-1) === 'ı' ? 'n' : 'in'} odası` : `${r.host}${t.room}`
+      item.innerHTML = `
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${roomLabel}</div>
+          <div style="font-size:12px;color:#777;">${r.players}/${r.max} ${t.players} · ${r.code}</div>
+        </div>
+        <button class="btn btn-outlined" style="width:auto;padding:6px 16px;font-size:13px;" onclick="quickJoin('${r.code}')">${t.joinRoomBtn}</button>
+      `
+      list.appendChild(item)
+    })
+  } catch { list.innerHTML = `<p style="font-size:13px;color:#f44336;text-align:center;padding:20px 0;">${t.loadFail}</p>` }
 }
 
-// Close modal on backdrop click
-document.getElementById("partyModal").addEventListener("click", e => { if (e.target === e.currentTarget) closeParty() })
-document.getElementById("settingsModal").addEventListener("click", e => { if (e.target === e.currentTarget) closeSettings() })
-
-applyTheme(getTheme())
+function quickJoin(code) {
+  const t = i18n[getLang()]
+  const name = document.getElementById('serverName').value.trim()
+  if (!name) { const e = document.getElementById('serverError'); e.textContent = t.enterName; e.style.display = 'block'; return }
+  document.getElementById('serverError').style.display = 'none'
+  window._joiningCode = code; window._joiningName = name
+  localStorage.setItem('playerName', name)
+  socket.emit('joinRoom', { name, code })
+}
 
 // Socket
 const socket = io()
 
-function showError(msg) {
-  const el = document.getElementById("errorMsg")
-  el.textContent = msg
-  el.style.display = "block"
-}
-function clearError() {
-  document.getElementById("errorMsg").style.display = "none"
-}
+function showError(msg) { const e = document.getElementById('errorMsg'); e.textContent = msg; e.style.display = 'block' }
+function clearError() { document.getElementById('errorMsg').style.display = 'none' }
 
 function createRoom() {
   clearError()
-  const name = document.getElementById("name").value.trim()
-  if (!name) return showError("isim boş olamaz")
-  const grid = document.getElementById("gridSize").value
-  const [cols, rows] = grid.split("x").map(Number)
-  localStorage.setItem("playerName", name)
-  socket.emit("createRoom", { name, rows, cols })
+  const t = i18n[getLang()]
+  const name = document.getElementById('name').value.trim()
+  if (!name) return showError(t.nameEmpty)
+  const [cols, rows] = document.getElementById('gridSize').value.split('x').map(Number)
+  localStorage.setItem('playerName', name)
+  socket.emit('createRoom', { name, rows, cols })
 }
 
 function joinRoom() {
   clearError()
-  const name = document.getElementById("nameJoin").value.trim()
-  const code = document.getElementById("code").value.trim().toUpperCase()
-  if (!name) return showError("isim boş olamaz")
-  if (!code) return showError("parti kodu boş olamaz")
-  localStorage.setItem("playerName", name)
-  socket.emit("joinRoom", { name, code })
+  const t = i18n[getLang()]
+  const name = document.getElementById('nameJoin').value.trim()
+  const code = document.getElementById('code').value.trim().toUpperCase()
+  if (!name) return showError(t.nameEmpty)
+  if (!code) return showError(t.codeEmpty)
+  localStorage.setItem('playerName', name)
+  socket.emit('joinRoom', { name, code })
 }
 
-socket.on("roomCreated", code => {
-  const name = document.getElementById("name").value.trim()
-  window.location = `/game?room=${code}&name=${encodeURIComponent(name)}`
-})
-socket.on("updateRoom", () => {
-  const name = document.getElementById("nameJoin").value.trim()
-  const code = document.getElementById("code").value.trim().toUpperCase()
+socket.on('roomCreated', code => { window.location = `/game?room=${code}&name=${encodeURIComponent(document.getElementById('name').value.trim())}` })
+socket.on('updateRoom', () => {
+  const name = document.getElementById('nameJoin').value.trim() || window._joiningName || ''
+  const code = document.getElementById('code').value.trim().toUpperCase() || window._joiningCode || ''
   if (code) window.location = `/game?room=${code}&name=${encodeURIComponent(name)}`
 })
-socket.on("errorMessage", msg => showError(msg))
+socket.on('errorMessage', msg => { showError(msg); const e = document.getElementById('serverError'); e.textContent = msg; e.style.display = 'block' })
 
-document.getElementById("name").addEventListener("keydown", e => { if (e.key === "Enter") createRoom() })
-document.getElementById("nameJoin").addEventListener("keydown", e => { if (e.key === "Enter") joinRoom() })
-document.getElementById("code").addEventListener("keydown", e => { if (e.key === "Enter") joinRoom() })
+document.getElementById('name').addEventListener('keydown', e => { if (e.key === 'Enter') createRoom() })
+document.getElementById('nameJoin').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom() })
+document.getElementById('code').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom() })
+
+const saved = localStorage.getItem('playerName')
+if (saved) { document.getElementById('name').value = saved; document.getElementById('nameJoin').value = saved; document.getElementById('serverName').value = saved }
 </script>
 </body>
 </html>
