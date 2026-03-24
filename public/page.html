@@ -83,11 +83,11 @@
     </div>
     <div id="game" style="display:none;">
       <div id="turnBanner" class="banner"></div>
-      <div style="display:flex;gap:8px;margin-bottom:4px;">
-        <input id="moveInput" class="mui-input" type="text" autocomplete="off" style="flex:1;" placeholder="1, 2, 3">
-        <button class="btn btn-outlined" onclick="sendMove()" id="t-send">GÖNDER</button>
+      <div id="moveBtns" style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="btn btn-outlined" id="moveBtn1" onclick="sendMove([1])" style="flex:1;">1</button>
+        <button class="btn btn-outlined" id="moveBtn2" onclick="sendMove([1,2])" style="flex:1;">1, 2</button>
+        <button class="btn btn-outlined" id="moveBtn3" onclick="sendMove([1,2,3])" style="flex:1;">1, 2, 3</button>
       </div>
-      <p id="moveError" style="color:var(--error);font-size:12px;min-height:16px;margin-bottom:12px;padding-left:2px;"></p>
       <div id="feed" style="text-align:center;margin-bottom:12px;min-height:16px;"></div>
       <div id="grid" style="display:flex;flex-direction:column;gap:8px;align-items:center;"></div>
     </div>
@@ -111,7 +111,6 @@ function applyLang(l) {
   document.getElementById('t-players').textContent = t.players
   document.getElementById('waitMsg').textContent = t.wait
   document.getElementById('startBtn').textContent = t.start
-  document.getElementById('t-send').textContent = t.send
 }
 function toggleLangMenu() { const m=document.getElementById('langMenu'); m.style.display=m.style.display==='none'?'block':'none' }
 function closeLangMenu() { document.getElementById('langMenu').style.display='none' }
@@ -136,7 +135,7 @@ function saveName() {
   if (!name) { document.getElementById('overlayErr').textContent = i18n[getLang()].nameEmpty; return }
   localStorage.setItem('playerName',name); playerName=name; hideOverlay(); joinRoom()
 }
-function joinRoom() { socket.emit('joinRoom',{name:playerName,code:roomCode}) }
+function joinRoom() { window._hasJoined = true; socket.emit('joinRoom',{name:playerName,code:roomCode}) }
 
 socket.on('errorMessage', msg => {
   const t = i18n[getLang()]
@@ -153,6 +152,7 @@ socket.on('gameOver', ({winner, reason}) => {
 })
 
 function render(data) {
+  window._lastRoomData = data
   const t = i18n[getLang()]
   if (data.started) {
     document.getElementById('lobby').style.display='none'
@@ -178,11 +178,9 @@ function render(data) {
   const cur = data.players[data.currentPlayerIndex]
   const isMyTurn = cur === playerName
   const banner = document.getElementById('turnBanner')
-  const input = document.getElementById('moveInput')
   banner.textContent = isMyTurn ? t.myTurn : t.turn + (cur||'')
   banner.className = 'banner' + (isMyTurn?' my-turn':'')
-  input.disabled = !isMyTurn
-  if (isMyTurn) input.focus()
+  setMoveBtnsDisabled(!isMyTurn)
   const elim = data.eliminated||[]
   const seats=[]
   for(let i=0;i<data.rows*data.cols;i++){
@@ -210,15 +208,34 @@ function render(data) {
 
 function addFeed(msg){const f=document.getElementById('feed');const p=document.createElement('p');p.style.cssText='font-size:12px;color:#666;margin:2px 0;';p.textContent=msg;f.prepend(p);while(f.children.length>4)f.removeChild(f.lastChild)}
 function startGame(){socket.emit('startGame')}
-function sendMove(){
-  const input=document.getElementById('moveInput'); const errEl=document.getElementById('moveError')
-  const val=input.value.trim(); errEl.textContent=''
-  if(!val){errEl.textContent='!';return}
-  const nums=val.split(',').map(n=>parseInt(n.trim())).filter(n=>!isNaN(n))
-  if(!nums.length||nums.length>3){errEl.textContent='1-3';return}
-  socket.emit('move',nums); input.value=''
+function sendMove(nums) {
+  socket.emit('move', nums)
 }
-document.addEventListener('keydown',e=>{if(e.key==='Enter')sendMove()})
+
+function setMoveBtnsDisabled(disabled) {
+  const current = disabled ? 0 : 1
+  const room = window._lastRoomData
+  if (!room) return
+  const base = room.currentNumber
+  document.getElementById('moveBtn1').disabled = disabled || base + 1 > 10
+  document.getElementById('moveBtn2').disabled = disabled || base + 2 > 10
+  document.getElementById('moveBtn3').disabled = disabled || base + 3 > 10
+}
+
+// Socket error handlers
+socket.on('connect_error', () => {
+  document.getElementById('turnBanner').textContent = '⚠ Bağlantı hatası — yeniden bağlanılıyor...'
+  document.getElementById('turnBanner').className = 'banner'
+  setMoveBtnsDisabled(true)
+})
+socket.on('disconnect', () => {
+  document.getElementById('turnBanner').textContent = '⚠ Bağlantı kesildi — yeniden bağlanılıyor...'
+  document.getElementById('turnBanner').className = 'banner'
+  setMoveBtnsDisabled(true)
+})
+socket.on('connect', () => {
+  if (window._hasJoined) joinRoom()
+})
 </script>
 </body>
 </html>

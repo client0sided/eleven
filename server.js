@@ -8,25 +8,37 @@ const io = new Server(server)
 
 app.use(express.static("public"))
 
-// Clean URL: /game?room=XXXXX instead of /page.html?room=XXXXX
 app.get("/game", (req, res) => {
   res.sendFile(__dirname + "/public/page.html")
 })
 
-// Public rooms list
 app.get("/rooms", (req, res) => {
-  const list = Object.entries(rooms)
-    .filter(([, r]) => !r.started)
-    .map(([code, r]) => ({
-      code,
-      players: r.players.length,
-      max: r.rows * r.cols,
-      host: r.host,
-    }))
-  res.json(list)
+  try {
+    const list = Object.entries(rooms)
+      .filter(([, r]) => !r.started)
+      .map(([code, r]) => ({
+        code,
+        players: r.players.length,
+        max: r.rows * r.cols,
+        host: r.host,
+        hasPassword: !!r.password,
+      }))
+    res.json(list)
+  } catch (err) {
+    console.error("GET /rooms error:", err)
+    res.json([])
+  }
 })
 
 let rooms = {}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
 
 function safeEmit(socket, event, data) {
   try { socket.emit(event, data) }
@@ -35,7 +47,7 @@ function safeEmit(socket, event, data) {
 
 function broadcast(code) {
   if (!rooms[code]) return
-  const { _deleteTimer, socketIds, ...roomData } = rooms[code]
+  const { _deleteTimer, socketIds, password, ...roomData } = rooms[code]
   io.to(code).emit("updateRoom", roomData)
 }
 
@@ -79,7 +91,7 @@ io.on("connection", (socket) => {
 
   socket.on("createRoom", (payload = {}) => {
     try {
-      let { name, rows, cols } = payload
+      let { name, rows, cols, password } = payload
       if (!name || typeof name !== "string" || name.trim() === "")
         return safeEmit(socket, "errorMessage", "Geçersiz isim")
       name = name.trim()
@@ -96,13 +108,14 @@ io.on("connection", (socket) => {
         players: [name], eliminated: [],
         currentNumber: 0, currentPlayerIndex: 0,
         started: false, host: name, rows, cols,
+        password: password && typeof password === "string" ? password.trim() : null,
         socketIds: { [name]: socket.id },
         _deleteTimer: null,
       }
       socket.join(code)
       socket.roomCode = code
       socket.playerName = name
-      console.log(`[${code}] Created by ${name}`)
+      console.log(`[${code}] Created by ${name}${rooms[code].password ? " (password protected)" : ""}`)
       safeEmit(socket, "roomCreated", code)
       broadcast(code)
     } catch (err) { console.error("createRoom error:", err) }
@@ -110,7 +123,7 @@ io.on("connection", (socket) => {
 
   socket.on("joinRoom", (payload = {}) => {
     try {
-      let { name, code } = payload
+      let { name, code, password } = payload
       if (!name || typeof name !== "string" || name.trim() === "")
         return safeEmit(socket, "errorMessage", "Geçersiz isim")
       if (!code || typeof code !== "string")
@@ -120,6 +133,12 @@ io.on("connection", (socket) => {
       if (!rooms[code])
         return safeEmit(socket, "errorMessage", "Oda bulunamadı")
       const room = rooms[code]
+
+      // Password check (skip for rejoining players)
+      if (room.password && !room.players.includes(name) && !room.eliminated.includes(name)) {
+        if (!password || password.trim() !== room.password)
+          return safeEmit(socket, "errorMessage", "Yanlış şifre")
+      }
 
       if (room._deleteTimer) {
         clearTimeout(room._deleteTimer)
@@ -161,8 +180,10 @@ io.on("connection", (socket) => {
       room.started = true
       room.eliminated = []
       room.currentNumber = 0
+      // Shuffle players for random seating
+      room.players = shuffle([...room.players])
       room.currentPlayerIndex = 0
-      console.log(`[${code}] Game started with ${room.players.length} players`)
+      console.log(`[${code}] Game started with ${room.players.length} players (shuffled)`)
       broadcast(code)
     } catch (err) { console.error("startGame error:", err) }
   })
@@ -252,6 +273,14 @@ io.on("connection", (socket) => {
       }
     } catch (err) { console.error("disconnect error:", err) }
   })
+})
+
+// Crash handlers
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err)
+})
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason)
 })
 
 server.listen(3000, () => { console.log("Server running on port 3000") })

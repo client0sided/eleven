@@ -184,6 +184,10 @@
                 <span class="material-icons chevron">expand_more</span>
               </div>
             </div>
+            <div class="field">
+              <label id="t-pass-label">şifre (opsiyonel)</label>
+              <input id="roomPassword" type="text" maxlength="20" autocomplete="off">
+            </div>
             <button class="btn btn-contained" style="margin-top:0;" onclick="createRoom()" id="t-create-btn">oluştur</button>
           </div>
         </div>
@@ -206,6 +210,10 @@
             <div class="field">
               <label id="t-code-label">parti kodu</label>
               <input id="code" type="text" maxlength="10" autocomplete="off" style="text-transform:uppercase;letter-spacing:4px;">
+            </div>
+            <div class="field" id="passFieldWrap" style="display:none;">
+              <label id="t-pass-label2">şifre</label>
+              <input id="joinPassword" type="text" maxlength="20" autocomplete="off">
             </div>
             <button class="btn btn-outlined" style="margin-top:0;" onclick="joinRoom()" id="t-join-btn">katıl</button>
           </div>
@@ -244,6 +252,8 @@ const i18n = {
     joinRoomBtn: 'katıl',
     placeholder: 'adınız',
     codePlaceholder: 'xxxxx',
+    passLabel: 'şifre (opsiyonel)',
+    passLabel2: 'şifre',
   },
   en: {
     subtitle: 'number game',
@@ -268,6 +278,8 @@ const i18n = {
     joinRoomBtn: 'join',
     placeholder: 'your name',
     codePlaceholder: 'xxxxx',
+    passLabel: 'password (optional)',
+    passLabel2: 'password',
   },
   de: {
     subtitle: 'Zahlenspiel',
@@ -292,6 +304,8 @@ const i18n = {
     joinRoomBtn: 'Beitreten',
     placeholder: 'Ihr Name',
     codePlaceholder: 'xxxxx',
+    passLabel: 'Passwort (optional)',
+    passLabel2: 'Passwort',
   },
   es: {
     subtitle: 'juego de números',
@@ -316,6 +330,8 @@ const i18n = {
     joinRoomBtn: 'unirse',
     placeholder: 'tu nombre',
     codePlaceholder: 'xxxxx',
+    passLabel: 'contraseña (opcional)',
+    passLabel2: 'contraseña',
   }
 }
 
@@ -346,6 +362,8 @@ function applyLang(l) {
   document.getElementById('nameJoin').placeholder = t.placeholder
   document.getElementById('serverName').placeholder = t.placeholder
   document.getElementById('code').placeholder = t.codePlaceholder
+  if (document.getElementById('t-pass-label')) document.getElementById('t-pass-label').textContent = t.passLabel
+  if (document.getElementById('t-pass-label2')) document.getElementById('t-pass-label2').textContent = t.passLabel2
   document.title = 'eleven — ' + t.subtitle
 }
 
@@ -384,7 +402,8 @@ async function loadRooms() {
     rooms.forEach(r => {
       const item = document.createElement('div')
       item.className = 'server-item'
-      const roomLabel = getLang() === 'tr' ? `${r.host}'${r.host.slice(-1) === 'i' || r.host.slice(-1) === 'ı' ? 'n' : 'in'} odası` : `${r.host}${t.room}`
+      const lock = r.hasPassword ? ' 🔒' : ''
+      const roomLabel = (getLang() === 'tr' ? `${r.host}'${r.host.slice(-1) === 'i' || r.host.slice(-1) === 'ı' ? 'n' : 'in'} odası` : `${r.host}${t.room}`) + lock
       item.innerHTML = `
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${roomLabel}</div>
@@ -403,8 +422,9 @@ function quickJoin(code) {
   if (!name) { const e = document.getElementById('serverError'); e.textContent = t.enterName; e.style.display = 'block'; return }
   document.getElementById('serverError').style.display = 'none'
   window._joiningCode = code; window._joiningName = name
+  const password = document.getElementById('joinPassword').value.trim()
   localStorage.setItem('playerName', name)
-  socket.emit('joinRoom', { name, code })
+  socket.emit('joinRoom', { name, code, password: password || null })
 }
 
 // Socket
@@ -419,8 +439,9 @@ function createRoom() {
   const name = document.getElementById('name').value.trim()
   if (!name) return showError(t.nameEmpty)
   const [cols, rows] = document.getElementById('gridSize').value.split('x').map(Number)
+  const password = document.getElementById('roomPassword').value.trim()
   localStorage.setItem('playerName', name)
-  socket.emit('createRoom', { name, rows, cols })
+  socket.emit('createRoom', { name, rows, cols, password: password || null })
 }
 
 function joinRoom() {
@@ -430,8 +451,9 @@ function joinRoom() {
   const code = document.getElementById('code').value.trim().toUpperCase()
   if (!name) return showError(t.nameEmpty)
   if (!code) return showError(t.codeEmpty)
+  const password = document.getElementById('joinPassword').value.trim()
   localStorage.setItem('playerName', name)
-  socket.emit('joinRoom', { name, code })
+  socket.emit('joinRoom', { name, code, password: password || null })
 }
 
 socket.on('roomCreated', code => { window.location = `/game?room=${code}&name=${encodeURIComponent(document.getElementById('name').value.trim())}` })
