@@ -1,0 +1,12 @@
+[build]
+  publish = "public"
+
+[[redirects]]
+  from = "/game"
+  to = "/page.html"
+  status = 200
+
+[[redirects]]
+  from = "/rooms"
+  to = "/.netlify/functions/rooms"
+  status = 200
