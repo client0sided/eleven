@@ -1,105 +1,97 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eleven</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Roboto', sans-serif; background: #121212; color: #fff; min-height: 100vh; }
-  :root { --surface: #1e1e1e; --surface2: #2a2a2a; --border: #333; --primary: #90caf9; --error: #f44336; }
-  .app { display: flex; flex-direction: column; min-height: 100vh; }
-  .appbar { background: #1e1e1e; border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-  .appbar-left { display: flex; align-items: center; gap: 4px; }
-  .appbar-title { font-size: 20px; font-weight: 500; }
-  .appbar-right { display: flex; align-items: center; gap: 8px; }
-  .main { flex: 1; padding: 24px 16px 80px; max-width: 960px; margin: 0 auto; width: 100%; }
-  .paper { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
-  .btn { padding: 10px 24px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; font-family: 'Roboto', sans-serif; cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em; transition: background 0.2s; }
-  .btn-contained { background: var(--primary); color: #000; }
-  .btn-contained:hover { background: #42a5f5; }
-  .btn-outlined { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-  .btn-outlined:hover { background: rgba(144,202,249,0.08); }
-  .icon-btn { background: none; border: none; color: #aaa; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; transition: background 0.2s, color 0.2s; }
-  .icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
-  .modal-overlay.open { display: flex; }
-  .modal-box { background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; padding: 28px; width: 100%; max-width: 360px; text-align: center; }
-  .banner { text-align: center; padding: 12px 16px; margin-bottom: 12px; font-size: 14px; border-radius: 4px; border: 1px solid var(--border); color: #aaa; }
-  .banner.my-turn { border-color: var(--primary); background: rgba(144,202,249,0.06); color: var(--primary); }
-  .desk { width: 96px; height: 64px; display: flex; align-items: center; justify-content: center; position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; transition: all 0.15s; }
-  .desk.current { border-color: var(--primary); background: rgba(144,202,249,0.06); }
-  .desk.me { border-color: #90caf9; }
-  .desk-num { position: absolute; top: 4px; right: 6px; font-size: 10px; color: #444; }
-  .desk-name { font-size: 11px; text-align: center; padding: 0 4px; word-break: break-all; line-height: 1.3; }
-  .player-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-  .player-row:last-child { border-bottom: none; }
-  .stat { font-size: 13px; color: #aaa; }
-  .stat span { color: #fff; font-weight: 500; }
-  .lang-menu { position: absolute; top: 56px; right: 16px; background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; min-width: 140px; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
-  .lang-item { padding: 10px 16px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
-  .lang-item:hover { background: rgba(255,255,255,0.06); }
-  .lang-item.active { color: var(--primary); }
-  .mui-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; font-size: 16px; color: #fff; font-family: 'Roboto', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; }
-  .mui-input:focus { border-color: var(--primary); }
+  * { font-family: 'Inter', sans-serif; }
+  body { background: #111827; }
+  .desk { width: 88px; height: 60px; }
 </style>
 </head>
-<body>
-<div id="overlay" class="modal-overlay">
-  <div id="overlayBox" class="modal-box"></div>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+<!-- Overlay Modal -->
+<div id="overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+  <div id="overlayBox" class="bg-gray-800 border border-gray-700 rounded-xl shadow-xl w-full max-w-sm p-6 text-center"></div>
 </div>
-<div id="langMenu" class="lang-menu" style="display:none;">
-  <div class="lang-item" data-lang="tr" onclick="setLang('tr')"><span>🇹🇷</span> Türkçe</div>
-  <div class="lang-item" data-lang="en" onclick="setLang('en')"><span>🇬🇧</span> English</div>
-  <div class="lang-item" data-lang="de" onclick="setLang('de')"><span>🇩🇪</span> Deutsch</div>
-  <div class="lang-item" data-lang="es" onclick="setLang('es')"><span>🇪🇸</span> Español</div>
+
+<!-- Lang Menu -->
+<div id="langMenu" class="hidden absolute top-16 right-4 z-50 bg-gray-800 border border-gray-700 rounded-lg shadow-xl min-w-36">
+  <div class="py-1">
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="tr" onclick="setLang('tr')"><span>🇹🇷</span> Türkçe</button>
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="en" onclick="setLang('en')"><span>🇬🇧</span> English</button>
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="de" onclick="setLang('de')"><span>🇩🇪</span> Deutsch</button>
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="es" onclick="setLang('es')"><span>🇪🇸</span> Español</button>
+  </div>
 </div>
-<div class="app">
-  <header class="appbar">
-    <div class="appbar-left">
-      <button class="icon-btn" onclick="window.location='/'"><span class="material-icons">arrow_back</span></button>
-      <span class="appbar-title">eleven</span>
+
+<!-- Navbar -->
+<nav class="bg-gray-800 border-b border-gray-700 px-4 h-14 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <button onclick="window.location='/'" class="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="font-semibold text-base">eleven</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <div id="gameStats" class="hidden items-center gap-4 text-sm">
+      <span class="text-gray-400">sayaç: <span id="numberDisplay" class="text-white font-medium">0</span></span>
+      <span class="text-gray-400">kalan: <span id="aliveCount" class="text-white font-medium">—</span></span>
     </div>
-    <div class="appbar-right">
-      <div id="gameStats" style="display:none;align-items:center;gap:16px;">
-        <span class="stat">sayaç: <span id="numberDisplay">0</span></span>
-        <span class="stat">kalan: <span id="aliveCount">—</span></span>
-      </div>
-      <span class="stat" style="font-family:monospace;" id="roomCodeEl"></span>
-      <button class="icon-btn" id="langBtn" onclick="toggleLangMenu()"><span id="langFlag" style="font-size:20px;">🇹🇷</span></button>
+    <span class="text-xs text-gray-500 font-mono" id="roomCodeEl"></span>
+    <button id="langBtn" onclick="toggleLangMenu()" class="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
+      <span id="langFlag" class="text-base">🇹🇷</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="flex-1 p-4 max-w-4xl mx-auto w-full pb-16">
+
+  <!-- Lobby -->
+  <div id="lobby" class="hidden max-w-sm mx-auto">
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+      <p id="t-players" class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">OYUNCULAR</p>
+      <ul id="playerList" class="mb-4 divide-y divide-gray-700"></ul>
+      <p id="waitMsg" class="hidden text-sm text-gray-500 text-center mb-3"></p>
+      <button id="startBtn" class="hidden w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors" onclick="startGame()"></button>
     </div>
-  </header>
-  <main class="main">
-    <div id="lobby" style="display:none;max-width:380px;margin:0 auto;">
-      <div class="paper">
-        <p id="t-players" style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">OYUNCULAR</p>
-        <ul id="playerList" style="list-style:none;margin-bottom:16px;"></ul>
-        <p id="waitMsg" style="display:none;font-size:13px;color:#aaa;text-align:center;margin-bottom:12px;"></p>
-        <button id="startBtn" class="btn btn-contained" style="display:none;width:100%;" onclick="startGame()"></button>
-      </div>
+  </div>
+
+  <!-- Game -->
+  <div id="game" class="hidden">
+    <!-- Turn banner -->
+    <div id="turnBanner" class="text-center text-sm py-3 px-4 rounded-lg border border-gray-700 text-gray-400 mb-3"></div>
+
+    <!-- Move input -->
+    <div class="flex gap-2 mb-1">
+      <input id="moveInput" type="text" autocomplete="off" placeholder="1  veya  1,2  veya  1,2,3"
+        class="flex-1 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 placeholder-gray-500">
+      <button onclick="sendMove()" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2.5 transition-colors" id="t-send">GÖNDER</button>
     </div>
-    <div id="game" style="display:none;">
-      <div id="turnBanner" class="banner"></div>
-      <div id="moveBtns" style="display:flex;gap:8px;margin-bottom:16px;">
-        <button class="btn btn-outlined" id="moveBtn1" onclick="sendMove([1])" style="flex:1;">1</button>
-        <button class="btn btn-outlined" id="moveBtn2" onclick="sendMove([1,2])" style="flex:1;">1, 2</button>
-        <button class="btn btn-outlined" id="moveBtn3" onclick="sendMove([1,2,3])" style="flex:1;">1, 2, 3</button>
-      </div>
-      <div id="feed" style="text-align:center;margin-bottom:12px;min-height:16px;"></div>
-      <div id="grid" style="display:flex;flex-direction:column;gap:8px;align-items:center;"></div>
-    </div>
-  </main>
-</div>
+    <p id="moveError" class="text-red-400 text-xs min-h-4 mb-3 pl-1"></p>
+
+    <!-- Feed -->
+    <div id="feed" class="text-center mb-3 min-h-4"></div>
+
+    <!-- Grid -->
+    <div id="grid" class="flex flex-col gap-2 items-center"></div>
+  </div>
+
+</main>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const i18n = {
-  tr: { players:'OYUNCULAR', wait:'Host oyunu başlatmasını bekliyor...', start:'OYUNU BAŞLAT', myTurn:'sıra sende', turn:'sıra: ', send:'GÖNDER', nameEmpty:'isim boş olamaz', again:'TEKRAR', exit:'ÇIKIŞ', elim:' elendi', errTitle:'Hata', back:'GERİ DÖN', counter:'sayaç: ', left:'kalan: ' },
-  en: { players:'PLAYERS', wait:'Waiting for host to start...', start:'START GAME', myTurn:'your turn', turn:'turn: ', send:'SEND', nameEmpty:'name cannot be empty', again:'AGAIN', exit:'EXIT', elim:' eliminated', errTitle:'Error', back:'GO BACK', counter:'counter: ', left:'left: ' },
-  de: { players:'SPIELER', wait:'Warten auf den Host...', start:'SPIEL STARTEN', myTurn:'du bist dran', turn:'dran: ', send:'SENDEN', nameEmpty:'Name darf nicht leer sein', again:'NOCHMAL', exit:'BEENDEN', elim:' raus', errTitle:'Fehler', back:'ZURÜCK', counter:'Zähler: ', left:'übrig: ' },
-  es: { players:'JUGADORES', wait:'Esperando al anfitrión...', start:'INICIAR JUEGO', myTurn:'tu turno', turn:'turno: ', send:'ENVIAR', nameEmpty:'nombre no puede estar vacío', again:'OTRA VEZ', exit:'SALIR', elim:' eliminado', errTitle:'Error', back:'VOLVER', counter:'contador: ', left:'quedan: ' }
+  tr: { players:'OYUNCULAR', wait:'Host oyunu başlatmasını bekliyor...', start:'OYUNU BAŞLAT', myTurn:'sıra sende', turn:'sıra: ', send:'GÖNDER', nameEmpty:'isim boş olamaz', again:'TEKRAR', exit:'ÇIKIŞ', elim:' elendi', errTitle:'Hata', back:'GERİ DÖN', counter:'sayaç: ', left:'kalan: ', winMe:'Kazandın!', winOther:'Oyun bitti', oppLeft:'Rakip ayrıldı.', winner:'Kazanan' },
+  en: { players:'PLAYERS', wait:'Waiting for host to start...', start:'START GAME', myTurn:'your turn', turn:'turn: ', send:'SEND', nameEmpty:'name cannot be empty', again:'AGAIN', exit:'EXIT', elim:' eliminated', errTitle:'Error', back:'GO BACK', counter:'counter: ', left:'left: ', winMe:'You won!', winOther:'Game over', oppLeft:'Opponent left.', winner:'Winner' },
+  de: { players:'SPIELER', wait:'Warten auf den Host...', start:'SPIEL STARTEN', myTurn:'du bist dran', turn:'dran: ', send:'SENDEN', nameEmpty:'Name darf nicht leer sein', again:'NOCHMAL', exit:'BEENDEN', elim:' raus', errTitle:'Fehler', back:'ZURÜCK', counter:'Zähler: ', left:'übrig: ', winMe:'Gewonnen!', winOther:'Spiel vorbei', oppLeft:'Gegner weg.', winner:'Gewinner' },
+  es: { players:'JUGADORES', wait:'Esperando al anfitrión...', start:'INICIAR JUEGO', myTurn:'tu turno', turn:'turno: ', send:'ENVIAR', nameEmpty:'nombre no puede estar vacío', again:'OTRA VEZ', exit:'SALIR', elim:' eliminado', errTitle:'Error', back:'VOLVER', counter:'contador: ', left:'quedan: ', winMe:'¡Ganaste!', winOther:'Juego terminado', oppLeft:'Rival se fue.', winner:'Ganador' },
 }
 const flags = { tr:'🇹🇷', en:'🇬🇧', de:'🇩🇪', es:'🇪🇸' }
 function getLang() { return localStorage.getItem('lang') || 'tr' }
@@ -107,13 +99,14 @@ function setLang(l) { localStorage.setItem('lang',l); applyLang(l); closeLangMen
 function applyLang(l) {
   const t = i18n[l]
   document.getElementById('langFlag').textContent = flags[l]
-  document.querySelectorAll('.lang-item').forEach(el => el.classList.toggle('active', el.dataset.lang===l))
+  document.querySelectorAll('.lang-item').forEach(el => el.classList.toggle('text-blue-400', el.dataset.lang===l))
   document.getElementById('t-players').textContent = t.players
   document.getElementById('waitMsg').textContent = t.wait
   document.getElementById('startBtn').textContent = t.start
+  document.getElementById('t-send').textContent = t.send
 }
-function toggleLangMenu() { const m=document.getElementById('langMenu'); m.style.display=m.style.display==='none'?'block':'none' }
-function closeLangMenu() { document.getElementById('langMenu').style.display='none' }
+function toggleLangMenu() { document.getElementById('langMenu').classList.toggle('hidden') }
+function closeLangMenu() { document.getElementById('langMenu').classList.add('hidden') }
 document.addEventListener('click', e => { if (!document.getElementById('langBtn').contains(e.target)) closeLangMenu() })
 applyLang(getLang())
 
@@ -123,127 +116,160 @@ const roomCode = params.get('room')
 let playerName = params.get('name') || localStorage.getItem('playerName')
 document.getElementById('roomCodeEl').textContent = roomCode || ''
 
-function showOverlay(html) { document.getElementById('overlayBox').innerHTML=html; document.getElementById('overlay').classList.add('open') }
-function hideOverlay() { document.getElementById('overlay').classList.remove('open') }
+function showOverlay(html) { document.getElementById('overlayBox').innerHTML = html; document.getElementById('overlay').classList.remove('hidden') }
+function hideOverlay() { document.getElementById('overlay').classList.add('hidden') }
 
 if (!playerName) {
-  showOverlay(`<p style="font-size:20px;font-weight:500;margin-bottom:20px;">eleven</p><input id="nameInput" class="mui-input" type="text" maxlength="20" placeholder="name" style="margin-bottom:8px;"><p id="overlayErr" style="color:#f44336;font-size:12px;min-height:14px;margin-bottom:12px;"></p><button class="btn btn-contained" style="width:100%;" onclick="saveName()">OK</button>`)
+  showOverlay(`
+    <p class="text-lg font-semibold mb-4">eleven</p>
+    <input id="nameInput" type="text" maxlength="20" placeholder="isminiz" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-2 placeholder-gray-400">
+    <p id="overlayErr" class="text-red-400 text-xs min-h-4 mb-3"></p>
+    <button onclick="saveName()" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors">OK</button>
+  `)
 } else { joinRoom() }
 
 function saveName() {
   const name = document.getElementById('nameInput').value.trim()
   if (!name) { document.getElementById('overlayErr').textContent = i18n[getLang()].nameEmpty; return }
-  localStorage.setItem('playerName',name); playerName=name; hideOverlay(); joinRoom()
+  localStorage.setItem('playerName', name); playerName = name; hideOverlay(); joinRoom()
 }
-function joinRoom() { window._hasJoined = true; socket.emit('joinRoom',{name:playerName,code:roomCode}) }
+function joinRoom() { window._hasJoined = true; socket.emit('joinRoom', { name: playerName, code: roomCode }) }
+
+socket.on('connect_error', () => {
+  document.getElementById('turnBanner').textContent = '⚠ Bağlantı hatası — yeniden bağlanılıyor...'
+  document.getElementById('turnBanner').className = 'text-center text-sm py-3 px-4 rounded-lg border border-gray-700 text-gray-400 mb-3'
+})
+socket.on('disconnect', () => {
+  document.getElementById('turnBanner').textContent = '⚠ Bağlantı kesildi — yeniden bağlanılıyor...'
+  document.getElementById('turnBanner').className = 'text-center text-sm py-3 px-4 rounded-lg border border-gray-700 text-gray-400 mb-3'
+})
+socket.on('connect', () => { if (window._hasJoined) joinRoom() })
 
 socket.on('errorMessage', msg => {
   const t = i18n[getLang()]
-  showOverlay(`<p style="font-size:18px;font-weight:500;margin-bottom:8px;">${t.errTitle}</p><p style="font-size:13px;color:#aaa;margin-bottom:20px;">${msg}</p><button class="btn btn-outlined" style="width:100%;" onclick="window.location='/'">${t.back}</button>`)
+  showOverlay(`<p class="text-lg font-semibold mb-2">${t.errTitle}</p><p class="text-sm text-gray-400 mb-5">${msg}</p><button class="w-full text-blue-400 border border-blue-800 hover:border-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors" onclick="window.location='/'">${t.back}</button>`)
 })
 socket.on('updateRoom', data => render(data))
-socket.on('playerEliminated', ({name}) => addFeed('💀 ' + name + i18n[getLang()].elim))
+socket.on('playerEliminated', ({name}) => addFeed(name + i18n[getLang()].elim))
 socket.on('gameOver', ({winner, reason}) => {
-  const t = i18n[getLang()]; const l = getLang()
+  const t = i18n[getLang()]
   const isMe = winner === playerName
-  const title = isMe ? {tr:'Kazandın!',en:'You won!',de:'Gewonnen!',es:'¡Ganaste!'}[l] : {tr:'Oyun bitti',en:'Game over',de:'Spiel vorbei',es:'Juego terminado'}[l]
-  const sub = reason==='opponent_left' ? {tr:'Rakip ayrıldı.',en:'Opponent left.',de:'Gegner weg.',es:'Rival se fue.'}[l] : `${winner}`
-  showOverlay(`<p style="font-size:18px;font-weight:500;margin-bottom:6px;">${title}</p><p style="font-size:13px;color:#aaa;margin-bottom:24px;">${sub}</p><div style="display:flex;gap:8px;"><button class="btn btn-contained" style="flex:1;" onclick="location.reload()">${t.again}</button><button class="btn btn-outlined" style="flex:1;" onclick="window.location='/'">${t.exit}</button></div>`)
+  const title = isMe ? t.winMe : t.winOther
+  const sub = reason === 'opponent_left' ? t.oppLeft : `${t.winner}: ${winner}`
+  showOverlay(`<p class="text-lg font-semibold mb-2">${title}</p><p class="text-sm text-gray-400 mb-5">${sub}</p><div class="flex gap-2"><button class="flex-1 text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm py-2.5 transition-colors" onclick="location.reload()">${t.again}</button><button class="flex-1 text-gray-300 bg-gray-700 hover:bg-gray-600 font-medium rounded-lg text-sm py-2.5 transition-colors border border-gray-600" onclick="window.location='/'">${t.exit}</button></div>`)
 })
 
 function render(data) {
   window._lastRoomData = data
   const t = i18n[getLang()]
   if (data.started) {
-    document.getElementById('lobby').style.display='none'
-    document.getElementById('game').style.display='block'
-    document.getElementById('gameStats').style.display='flex'
+    document.getElementById('lobby').classList.add('hidden')
+    document.getElementById('game').classList.remove('hidden')
+    document.getElementById('gameStats').classList.remove('hidden')
+    document.getElementById('gameStats').classList.add('flex')
   } else {
-    document.getElementById('lobby').style.display='block'
-    document.getElementById('game').style.display='none'
-    document.getElementById('gameStats').style.display='none'
+    document.getElementById('lobby').classList.remove('hidden')
+    document.getElementById('game').classList.add('hidden')
+    document.getElementById('gameStats').classList.add('hidden')
     const list = document.getElementById('playerList')
-    list.innerHTML=''
+    list.innerHTML = ''
     data.players.forEach(p => {
-      const li=document.createElement('li'); li.className='player-row'
-      li.innerHTML=`<span>${p}</span>${p===data.host?'<span style="font-size:11px;color:#aaa;">HOST</span>':''}`
+      const li = document.createElement('li')
+      li.className = 'flex justify-between items-center py-2.5 text-sm'
+      li.innerHTML = `<span class="text-white">${p}</span>${p === data.host ? '<span class="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded">HOST</span>' : ''}`
       list.appendChild(li)
     })
-    document.getElementById('startBtn').style.display = playerName===data.host?'block':'none'
-    document.getElementById('waitMsg').style.display = playerName!==data.host?'block':'none'
+    document.getElementById('startBtn').style.display = playerName === data.host ? 'block' : 'none'
+    document.getElementById('waitMsg').style.display = playerName !== data.host ? 'block' : 'none'
     return
   }
+
   document.getElementById('numberDisplay').textContent = data.currentNumber
   document.getElementById('aliveCount').textContent = data.players.length
+
   const cur = data.players[data.currentPlayerIndex]
   const isMyTurn = cur === playerName
   const banner = document.getElementById('turnBanner')
-  banner.textContent = isMyTurn ? t.myTurn : t.turn + (cur||'')
-  banner.className = 'banner' + (isMyTurn?' my-turn':'')
-  setMoveBtnsDisabled(!isMyTurn)
-  const elim = data.eliminated||[]
-  const seats=[]
-  for(let i=0;i<data.rows*data.cols;i++){
-    if(i<data.players.length) seats.push({name:data.players[i],state:'active'})
-    else if(i<data.players.length+elim.length) seats.push({name:elim[i-data.players.length],state:'out'})
+  const input = document.getElementById('moveInput')
+
+  if (isMyTurn) {
+    banner.textContent = t.myTurn
+    banner.className = 'text-center text-sm py-3 px-4 rounded-lg border border-blue-700 bg-blue-900/30 text-blue-300 mb-3'
+    input.disabled = false
+    input.focus()
+  } else {
+    banner.textContent = t.turn + (cur || '')
+    banner.className = 'text-center text-sm py-3 px-4 rounded-lg border border-gray-700 text-gray-400 mb-3'
+    input.disabled = true
+  }
+
+  const elim = data.eliminated || []
+  const seats = []
+  for (let i = 0; i < data.rows * data.cols; i++) {
+    if (i < data.players.length) seats.push({ name: data.players[i], state: 'active' })
+    else if (i < data.players.length + elim.length) seats.push({ name: elim[i - data.players.length], state: 'out' })
     else seats.push(null)
   }
-  const grid=document.getElementById('grid'); grid.innerHTML=''; let idx=0
-  for(let r=0;r<data.rows;r++){
-    const row=document.createElement('div'); row.style.cssText='display:flex;gap:8px;flex-wrap:wrap;justify-content:center;'
-    for(let c=0;c<data.cols;c++){
-      const seat=seats[idx]; const desk=document.createElement('div'); desk.className='desk'
-      const num=document.createElement('div'); num.className='desk-num'; num.textContent=idx+1; desk.appendChild(num)
-      if(seat){
-        const nameEl=document.createElement('div'); nameEl.className='desk-name'; nameEl.textContent=seat.name
-        if(seat.state==='out'){desk.style.opacity='0.2';nameEl.style.textDecoration='line-through';nameEl.style.color='#555'}
-        else{if(idx===data.currentPlayerIndex)desk.classList.add('current');if(seat.name===playerName)desk.classList.add('me')}
+
+  const grid = document.getElementById('grid')
+  grid.innerHTML = ''
+  let idx = 0
+  for (let r = 0; r < data.rows; r++) {
+    const row = document.createElement('div')
+    row.className = 'flex gap-2 flex-wrap justify-center'
+    for (let c = 0; c < data.cols; c++) {
+      const seat = seats[idx]
+      const desk = document.createElement('div')
+      desk.className = 'desk relative flex items-center justify-center rounded bg-gray-800 border border-gray-700 transition-all'
+
+      const num = document.createElement('div')
+      num.className = 'absolute top-1 right-1.5 text-xs text-gray-600'
+      num.textContent = idx + 1
+      desk.appendChild(num)
+
+      if (seat) {
+        const nameEl = document.createElement('div')
+        nameEl.className = 'text-xs text-center px-1 leading-tight break-all'
+        nameEl.textContent = seat.name
+        if (seat.state === 'out') {
+          desk.classList.add('opacity-20')
+          nameEl.classList.add('line-through', 'text-gray-500')
+        } else {
+          if (idx === data.currentPlayerIndex) desk.classList.add('border-blue-500', 'bg-blue-900/20')
+          if (seat.name === playerName) desk.classList.add('border-blue-400')
+        }
         desk.appendChild(nameEl)
       }
-      row.appendChild(desk); idx++
+      row.appendChild(desk)
+      idx++
     }
     grid.appendChild(row)
   }
 }
 
-function addFeed(msg){const f=document.getElementById('feed');const p=document.createElement('p');p.style.cssText='font-size:12px;color:#666;margin:2px 0;';p.textContent=msg;f.prepend(p);while(f.children.length>4)f.removeChild(f.lastChild)}
-function startGame(){socket.emit('startGame')}
-function sendMove(nums) {
+function addFeed(msg) {
+  const feed = document.getElementById('feed')
+  const p = document.createElement('p')
+  p.className = 'text-xs text-gray-600 my-0.5'
+  p.textContent = msg
+  feed.prepend(p)
+  while (feed.children.length > 4) feed.removeChild(feed.lastChild)
+}
+
+function startGame() { socket.emit('startGame') }
+
+function sendMove() {
+  const input = document.getElementById('moveInput')
+  const errEl = document.getElementById('moveError')
+  const val = input.value.trim()
+  errEl.textContent = ''
+  if (!val) return
+  const nums = val.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n))
+  if (!nums.length || nums.length > 3) { errEl.textContent = '1-3 sayı girin'; return }
   socket.emit('move', nums)
+  input.value = ''
 }
-
-function setMoveBtnsDisabled(disabled) {
-  const room = window._lastRoomData
-  if (!room) return
-  const base = room.currentNumber
-
-  const btn1 = document.getElementById('moveBtn1')
-  const btn2 = document.getElementById('moveBtn2')
-  const btn3 = document.getElementById('moveBtn3')
-
-  btn1.textContent = `${base + 1}`
-  btn2.textContent = `${base + 1}, ${base + 2}`
-  btn3.textContent = `${base + 1}, ${base + 2}, ${base + 3}`
-
-  btn1.disabled = disabled || base + 1 > 10
-  btn2.disabled = disabled || base + 2 > 10
-  btn3.disabled = disabled || base + 3 > 10
-}
-
-// Socket error handlers
-socket.on('connect_error', () => {
-  document.getElementById('turnBanner').textContent = '⚠ Bağlantı hatası — yeniden bağlanılıyor...'
-  document.getElementById('turnBanner').className = 'banner'
-  setMoveBtnsDisabled(true)
-})
-socket.on('disconnect', () => {
-  document.getElementById('turnBanner').textContent = '⚠ Bağlantı kesildi — yeniden bağlanılıyor...'
-  document.getElementById('turnBanner').className = 'banner'
-  setMoveBtnsDisabled(true)
-})
-socket.on('connect', () => {
-  if (window._hasJoined) joinRoom()
-})
+document.addEventListener('keydown', e => { if (e.key === 'Enter') sendMove() })
 </script>
 </body>
 </html>

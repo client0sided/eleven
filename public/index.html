@@ -1,443 +1,247 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eleven</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Roboto', sans-serif; background: #121212; color: #fff; min-height: 100vh; }
-
-  /* MUI-style tokens */
-  :root {
-    --bg: #121212;
-    --surface: #1e1e1e;
-    --surface2: #2a2a2a;
-    --border: #333;
-    --primary: #90caf9;
-    --primary-dark: #42a5f5;
-    --text-secondary: #aaa;
-    --error: #f44336;
-    --radius: 4px;
-  }
-
-  /* Layout */
-  .app { display: flex; flex-direction: column; min-height: 100vh; }
-  .appbar {
-    background: #1e1e1e;
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .appbar-title { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
-  .appbar-actions { display: flex; align-items: center; gap: 4px; }
-  .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
-
-  /* Cards */
-  .paper {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px;
-  }
-
-  /* Inputs */
-  .field { display: flex; flex-direction: column; margin-bottom: 16px; }
-  .field label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .field input, .field select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    font-size: 16px;
-    color: #fff;
-    font-family: 'Roboto', sans-serif;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-  .field input:focus, .field select:focus { border-color: var(--primary); }
-  .field select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 36px; }
-  .select-wrap { position: relative; }
-  .select-wrap .chevron { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-secondary); font-size: 20px; }
-
-  /* Buttons */
-  .btn {
-    padding: 10px 24px; border: none; border-radius: var(--radius);
-    font-size: 14px; font-weight: 500; font-family: 'Roboto', sans-serif;
-    cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em;
-    transition: background 0.2s, box-shadow 0.2s; width: 100%;
-  }
-  .btn-contained { background: var(--primary); color: #000; }
-  .btn-contained:hover { background: var(--primary-dark); box-shadow: 0 2px 8px rgba(144,202,249,0.3); }
-  .btn-outlined { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-  .btn-outlined:hover { background: rgba(144,202,249,0.08); }
-  .btn-text { background: none; color: var(--primary); border: none; padding: 8px 16px; width: auto; }
-  .btn-text:hover { background: rgba(144,202,249,0.08); border-radius: var(--radius); }
-
-  /* Icon buttons */
-  .icon-btn {
-    background: none; border: none; color: #aaa; cursor: pointer;
-    padding: 8px; border-radius: 50%; display: flex; align-items: center;
-    transition: background 0.2s, color 0.2s;
-  }
-  .icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .icon-btn.active { color: var(--primary); }
-
-  /* Divider */
-  .divider-v { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 8px; }
-  .divider-v .line { background: var(--border); width: 1px; flex: 1; }
-  .divider-v span { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
-
-  /* Error */
-  .error-text { font-size: 13px; color: var(--error); text-align: center; margin-top: 12px; display: none; }
-
-  /* Modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
-  .modal-overlay.open { display: flex; }
-  .modal-box { background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 100%; max-width: 380px; }
-  .modal-title { font-size: 18px; font-weight: 500; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-
-  /* Server list */
-  .server-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
-  .server-item:last-child { border-bottom: none; }
-
-  /* Language menu */
-  .lang-menu { position: absolute; top: 56px; right: 16px; background: #1e1e1e; border: 1px solid var(--border); border-radius: 8px; min-width: 140px; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
-  .lang-item { padding: 10px 16px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
-  .lang-item:hover { background: rgba(255,255,255,0.06); }
-  .lang-item.active { color: var(--primary); }
-  .flag { font-size: 18px; }
+  * { font-family: 'Inter', sans-serif; }
+  body { background: #111827; }
 </style>
 </head>
-<body>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
 
-<!-- Server Modal -->
-<div id="serverModal" class="modal-overlay">
-  <div class="modal-box" style="max-width:440px;">
-    <div class="modal-title">
-      <span id="t-open-rooms">açık odalar</span>
-      <div style="display:flex;gap:4px;">
-        <button class="icon-btn" onclick="loadRooms()" title="yenile"><span class="material-icons" style="font-size:20px;">refresh</span></button>
-        <button class="icon-btn" onclick="closeServers()"><span class="material-icons" style="font-size:20px;">close</span></button>
-      </div>
-    </div>
-    <div class="field" style="margin-bottom:16px;">
-      <label id="t-your-name-s">ismin</label>
-      <input id="serverName" type="text" maxlength="20">
-    </div>
-    <div id="roomList" style="min-height:60px;"><p style="font-size:13px;color:#777;text-align:center;padding:20px 0;" id="t-loading">yükleniyor...</p></div>
-    <p id="serverError" class="error-text"></p>
+<!-- Instructions Modal -->
+<div id="instructionsModal" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+  <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-xl w-full max-w-md p-6">
+    <h3 class="text-lg font-semibold mb-4 text-white">nasıl oynanır?</h3>
+    <ul class="space-y-3 text-sm text-gray-300 mb-6">
+      <li class="flex gap-2"><span class="text-blue-400 font-bold">1.</span> Her oyuncu sırayla 1, 2 veya 3 ardışık sayı söyler.</li>
+      <li class="flex gap-2"><span class="text-blue-400 font-bold">2.</span> Sayılar kaldığı yerden devam eder (örn: 1, 2 → sonra 3 veya 3, 4 veya 3, 4, 5).</li>
+      <li class="flex gap-2"><span class="text-blue-400 font-bold">3.</span> 11'i söylemek zorunda kalan oyuncu elenir.</li>
+      <li class="flex gap-2"><span class="text-blue-400 font-bold">4.</span> En son kalan oyuncu kazanır.</li>
+    </ul>
+    <button onclick="closeInstructions()" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors">
+      anladım
+    </button>
   </div>
 </div>
 
-<!-- Language Menu -->
-<div id="langMenu" class="lang-menu" style="display:none;">
-  <div class="lang-item" data-lang="tr" onclick="setLang('tr')"><span class="flag">🇹🇷</span> Türkçe</div>
-  <div class="lang-item" data-lang="en" onclick="setLang('en')"><span class="flag">🇬🇧</span> English</div>
-  <div class="lang-item" data-lang="de" onclick="setLang('de')"><span class="flag">🇩🇪</span> Deutsch</div>
-  <div class="lang-item" data-lang="es" onclick="setLang('es')"><span class="flag">🇪🇸</span> Español</div>
-</div>
-
-<div class="app">
-  <!-- AppBar -->
-  <header class="appbar">
-    <span class="appbar-title">eleven</span>
-    <div class="appbar-actions">
-      <button class="icon-btn" id="serverBtn" onclick="openServers()" title="açık odalar">
-        <span class="material-icons">dns</span>
-      </button>
-      <button class="icon-btn" id="langBtn" onclick="toggleLangMenu()">
-        <span id="langFlag" style="font-size:20px;">🇹🇷</span>
+<!-- Create Modal -->
+<div id="createModal" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+  <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-xl w-full max-w-md p-6">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="text-lg font-semibold text-white" id="t-create-title">parti oluştur</h3>
+      <button onclick="closeCreate()" class="text-gray-400 hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
-  </header>
-
-  <!-- Main -->
-  <main class="main">
-    <div style="width:100%;max-width:680px;">
-      <div style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;">
-
-        <!-- Create -->
-        <div class="paper" style="flex:1;min-width:240px;display:flex;flex-direction:column;">
-          <p style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;" id="t-create-title">parti oluştur</p>
-          <div style="flex:1;display:flex;flex-direction:column;">
-            <div class="field">
-              <label id="t-name-label">isim</label>
-              <input id="name" type="text" maxlength="20">
-            </div>
-            <div class="field">
-              <label id="t-size-label">sınıf boyutu</label>
-              <div class="select-wrap">
-                <select id="gridSize">
-                  <option value="5x4">5 × 4 — 20</option>
-                  <option value="5x5">5 × 5 — 25</option>
-                  <option value="4x4">4 × 4 — 16</option>
-                  <option value="6x5">6 × 5 — 30</option>
-                </select>
-                <span class="material-icons chevron">expand_more</span>
-              </div>
-            </div>
-            <div class="field">
-              <label id="t-pass-label">şifre (opsiyonel)</label>
-              <input id="roomPassword" type="text" maxlength="20" autocomplete="off">
-            </div>
-            <button class="btn btn-contained" style="margin-top:0;" onclick="createRoom()" id="t-create-btn">oluştur</button>
-          </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="divider-v">
-          <div class="line"></div>
-          <span id="t-or">ya da</span>
-          <div class="line"></div>
-        </div>
-
-        <!-- Join -->
-        <div class="paper" style="flex:1;min-width:240px;display:flex;flex-direction:column;">
-          <p style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;" id="t-join-title">partiye katıl</p>
-          <div style="flex:1;display:flex;flex-direction:column;">
-            <div class="field">
-              <label id="t-name-label2">isim</label>
-              <input id="nameJoin" type="text" maxlength="20">
-            </div>
-            <div class="field">
-              <label id="t-code-label">parti kodu</label>
-              <input id="code" type="text" maxlength="10" autocomplete="off" style="text-transform:uppercase;letter-spacing:4px;">
-            </div>
-            <div class="field" id="passFieldWrap" style="display:none;">
-              <label id="t-pass-label2">şifre</label>
-              <input id="joinPassword" type="text" maxlength="20" autocomplete="off">
-            </div>
-            <button class="btn btn-outlined" style="margin-top:0;" onclick="joinRoom()" id="t-join-btn">katıl</button>
-          </div>
-        </div>
-
+    <div class="space-y-4">
+      <div>
+        <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-name-c">isim</label>
+        <input id="nameCreate" type="text" maxlength="20" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400">
       </div>
-      <p id="errorMsg" class="error-text"></p>
+      <div>
+        <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-size-c">sınıf boyutu</label>
+        <select id="gridSize" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <option value="5x4">5 × 4 — 20 kişi</option>
+          <option value="5x5">5 × 5 — 25 kişi</option>
+          <option value="4x4">4 × 4 — 16 kişi</option>
+          <option value="6x5">6 × 5 — 30 kişi</option>
+        </select>
+      </div>
+      <div>
+        <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-pass-c">şifre <span class="text-gray-500 font-normal">(opsiyonel)</span></label>
+        <input id="roomPassword" type="text" maxlength="20" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400">
+      </div>
+      <button onclick="createRoom()" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors" id="t-create-btn">oluştur</button>
+      <p id="createError" class="text-red-400 text-sm text-center hidden"></p>
     </div>
-  </main>
+  </div>
 </div>
+
+<!-- Join Modal -->
+<div id="joinModal" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+  <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-xl w-full max-w-md p-6">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="text-lg font-semibold text-white" id="t-join-title">partiye katıl</h3>
+      <button onclick="closeJoin()" class="text-gray-400 hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-name-j">isim</label>
+        <input id="nameJoin" type="text" maxlength="20" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400">
+      </div>
+      <div>
+        <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-code-j">parti kodu</label>
+        <input id="code" type="text" maxlength="10" autocomplete="off" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400 uppercase tracking-widest">
+      </div>
+      <div id="passFieldWrap" class="hidden">
+        <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-pass-j">şifre</label>
+        <input id="joinPassword" type="text" maxlength="20" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400">
+      </div>
+      <button onclick="joinRoom()" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors" id="t-join-btn">katıl</button>
+      <p id="joinError" class="text-red-400 text-sm text-center hidden"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Server Modal -->
+<div id="serverModal" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+  <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-xl w-full max-w-lg p-6">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="text-lg font-semibold text-white" id="t-open-rooms">açık odalar</h3>
+      <div class="flex gap-2">
+        <button onclick="loadRooms()" class="text-gray-400 hover:text-white transition-colors p-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+        <button onclick="closeServers()" class="text-gray-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label class="block mb-1.5 text-sm font-medium text-gray-300" id="t-your-name-s">ismin</label>
+      <input id="serverName" type="text" maxlength="20" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400">
+    </div>
+    <div id="roomList" class="min-h-16">
+      <p class="text-sm text-gray-500 text-center py-5">yükleniyor...</p>
+    </div>
+    <p id="serverError" class="text-red-400 text-sm text-center mt-2 hidden"></p>
+  </div>
+</div>
+
+<!-- Lang Menu -->
+<div id="langMenu" class="hidden absolute top-16 right-4 z-50 bg-gray-800 border border-gray-700 rounded-lg shadow-xl min-w-36">
+  <div class="py-1">
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="tr" onclick="setLang('tr')"><span>🇹🇷</span> Türkçe</button>
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="en" onclick="setLang('en')"><span>🇬🇧</span> English</button>
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="de" onclick="setLang('de')"><span>🇩🇪</span> Deutsch</button>
+    <button class="lang-item w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-3" data-lang="es" onclick="setLang('es')"><span>🇪🇸</span> Español</button>
+  </div>
+</div>
+
+<!-- Navbar -->
+<nav class="bg-gray-800 border-b border-gray-700 px-6 h-16 flex items-center justify-between">
+  <div>
+    <p class="text-lg font-semibold">eleven</p>
+    <p class="text-xs text-gray-500" id="t-subtitle">sayı oyunu</p>
+  </div>
+  <div class="flex items-center gap-1">
+    <button onclick="openServers()" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors" title="açık odalar">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12H3m18 0h-2M12 5V3m0 18v-2m4.22-1.78l-1.42-1.42M5.2 5.2L6.62 6.62M18.8 5.2l-1.42 1.42M5.2 18.8l1.42-1.42M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+    </button>
+    <button id="langBtn" onclick="toggleLangMenu()" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
+      <span id="langFlag" class="text-lg">🇹🇷</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="flex-1 flex items-center justify-center p-6">
+  <div class="text-center space-y-4 w-full max-w-sm">
+    <h1 class="text-4xl font-bold text-white mb-2">eleven</h1>
+    <p class="text-gray-400 text-sm mb-8" id="t-tagline">sayı oyunu</p>
+    <div class="flex flex-col gap-3">
+      <button onclick="openCreate()" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-base px-5 py-3 transition-colors" id="t-create-main">parti oluştur</button>
+      <button onclick="openJoin()" class="w-full text-white bg-gray-700 hover:bg-gray-600 font-medium rounded-lg text-base px-5 py-3 transition-colors border border-gray-600" id="t-join-main">partiye katıl</button>
+    </div>
+    <button onclick="openInstructions()" class="text-sm text-gray-500 hover:text-gray-300 transition-colors mt-2" id="t-how">nasıl oynanır?</button>
+    <p id="mainError" class="text-red-400 text-sm text-center hidden"></p>
+  </div>
+</main>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-// === TRANSLATIONS ===
 const i18n = {
-  tr: {
-    subtitle: 'sayı oyunu',
-    createTitle: 'parti oluştur',
-    joinTitle: 'partiye katıl',
-    nameLbl: 'isim',
-    sizeLbl: 'sınıf boyutu',
-    codeLbl: 'parti kodu',
-    createBtn: 'oluştur',
-    joinBtn: 'katıl',
-    or: 'ya da',
-    openRooms: 'açık odalar',
-    yourName: 'ismin',
-    loading: 'yükleniyor...',
-    noRooms: 'açık oda yok',
-    loadFail: 'yüklenemedi',
-    nameEmpty: 'isim boş olamaz',
-    codeEmpty: 'parti kodu boş olamaz',
-    enterName: 'önce isim gir',
-    room: 'odası',
-    players: 'oyuncu',
-    joinRoomBtn: 'katıl',
-    placeholder: 'adınız',
-    codePlaceholder: 'xxxxx',
-    passLabel: 'şifre (opsiyonel)',
-    passLabel2: 'şifre',
-  },
-  en: {
-    subtitle: 'number game',
-    createTitle: 'create party',
-    joinTitle: 'join party',
-    nameLbl: 'name',
-    sizeLbl: 'class size',
-    codeLbl: 'party code',
-    createBtn: 'create',
-    joinBtn: 'join',
-    or: 'or',
-    openRooms: 'open rooms',
-    yourName: 'your name',
-    loading: 'loading...',
-    noRooms: 'no open rooms',
-    loadFail: 'failed to load',
-    nameEmpty: 'name cannot be empty',
-    codeEmpty: 'party code cannot be empty',
-    enterName: 'enter your name first',
-    room: "'s room",
-    players: 'players',
-    joinRoomBtn: 'join',
-    placeholder: 'your name',
-    codePlaceholder: 'xxxxx',
-    passLabel: 'password (optional)',
-    passLabel2: 'password',
-  },
-  de: {
-    subtitle: 'Zahlenspiel',
-    createTitle: 'Party erstellen',
-    joinTitle: 'Party beitreten',
-    nameLbl: 'Name',
-    sizeLbl: 'Klassengröße',
-    codeLbl: 'Party-Code',
-    createBtn: 'Erstellen',
-    joinBtn: 'Beitreten',
-    or: 'oder',
-    openRooms: 'Offene Räume',
-    yourName: 'Dein Name',
-    loading: 'Wird geladen...',
-    noRooms: 'Keine offenen Räume',
-    loadFail: 'Laden fehlgeschlagen',
-    nameEmpty: 'Name darf nicht leer sein',
-    codeEmpty: 'Party-Code darf nicht leer sein',
-    enterName: 'Zuerst Namen eingeben',
-    room: 's Raum',
-    players: 'Spieler',
-    joinRoomBtn: 'Beitreten',
-    placeholder: 'Ihr Name',
-    codePlaceholder: 'xxxxx',
-    passLabel: 'Passwort (optional)',
-    passLabel2: 'Passwort',
-  },
-  es: {
-    subtitle: 'juego de números',
-    createTitle: 'crear partida',
-    joinTitle: 'unirse a partida',
-    nameLbl: 'nombre',
-    sizeLbl: 'tamaño de clase',
-    codeLbl: 'código de partida',
-    createBtn: 'crear',
-    joinBtn: 'unirse',
-    or: 'o',
-    openRooms: 'salas abiertas',
-    yourName: 'tu nombre',
-    loading: 'cargando...',
-    noRooms: 'no hay salas abiertas',
-    loadFail: 'error al cargar',
-    nameEmpty: 'el nombre no puede estar vacío',
-    codeEmpty: 'el código no puede estar vacío',
-    enterName: 'primero ingresa tu nombre',
-    room: ' sala',
-    players: 'jugadores',
-    joinRoomBtn: 'unirse',
-    placeholder: 'tu nombre',
-    codePlaceholder: 'xxxxx',
-    passLabel: 'contraseña (opcional)',
-    passLabel2: 'contraseña',
-  }
+  tr: { subtitle:'sayı oyunu', tagline:'sayı oyunu', createMain:'parti oluştur', joinMain:'partiye katıl', how:'nasıl oynanır?', createTitle:'parti oluştur', joinTitle:'partiye katıl', nameC:'isim', sizeC:'sınıf boyutu', passC:'şifre', createBtn:'oluştur', joinBtn:'katıl', nameJ:'isim', codeJ:'parti kodu', passJ:'şifre', openRooms:'açık odalar', yourName:'ismin', nameEmpty:'isim boş olamaz', codeEmpty:'kod boş olamaz', enterName:'önce isim gir', or:'ya da', noRooms:'açık oda yok', loadFail:'yüklenemedi', loading:'yükleniyor...', joinRoomBtn:'katıl',
+    instructions: { title:'nasıl oynanır?', steps:['Her oyuncu sırayla 1, 2 veya 3 ardışık sayı söyler.','Sayılar kaldığı yerden devam eder.','11\'i söylemek zorunda kalan elenir.','En son kalan kazanır.'], ok:'anladım' } },
+  en: { subtitle:'number game', tagline:'number game', createMain:'create party', joinMain:'join party', how:'how to play?', createTitle:'create party', joinTitle:'join party', nameC:'name', sizeC:'class size', passC:'password', createBtn:'create', joinBtn:'join', nameJ:'name', codeJ:'party code', passJ:'password', openRooms:'open rooms', yourName:'your name', nameEmpty:'name cannot be empty', codeEmpty:'code cannot be empty', enterName:'enter your name first', or:'or', noRooms:'no open rooms', loadFail:'failed to load', loading:'loading...', joinRoomBtn:'join',
+    instructions: { title:'how to play?', steps:['Each player says 1, 2, or 3 consecutive numbers per turn.','Numbers continue from where they left off.','Whoever is forced to say 11 is eliminated.','Last one standing wins.'], ok:'got it' } },
+  de: { subtitle:'Zahlenspiel', tagline:'Zahlenspiel', createMain:'Party erstellen', joinMain:'Party beitreten', how:'Wie spielt man?', createTitle:'Party erstellen', joinTitle:'Party beitreten', nameC:'Name', sizeC:'Klassengröße', passC:'Passwort', createBtn:'Erstellen', joinBtn:'Beitreten', nameJ:'Name', codeJ:'Party-Code', passJ:'Passwort', openRooms:'Offene Räume', yourName:'Dein Name', nameEmpty:'Name darf nicht leer sein', codeEmpty:'Code darf nicht leer sein', enterName:'Zuerst Namen eingeben', or:'oder', noRooms:'Keine offenen Räume', loadFail:'Laden fehlgeschlagen', loading:'Wird geladen...', joinRoomBtn:'Beitreten',
+    instructions: { title:'Wie spielt man?', steps:['Jeder Spieler nennt 1, 2 oder 3 aufeinanderfolgende Zahlen.','Die Zahlen setzen dort fort, wo sie aufgehört haben.','Wer gezwungen ist, 11 zu sagen, scheidet aus.','Der letzte Überlebende gewinnt.'], ok:'Verstanden' } },
+  es: { subtitle:'juego de números', tagline:'juego de números', createMain:'crear partida', joinMain:'unirse a partida', how:'¿cómo se juega?', createTitle:'crear partida', joinTitle:'unirse a partida', nameC:'nombre', sizeC:'tamaño de clase', passC:'contraseña', createBtn:'crear', joinBtn:'unirse', nameJ:'nombre', codeJ:'código de partida', passJ:'contraseña', openRooms:'salas abiertas', yourName:'tu nombre', nameEmpty:'el nombre no puede estar vacío', codeEmpty:'el código no puede estar vacío', enterName:'primero ingresa tu nombre', or:'o', noRooms:'no hay salas abiertas', loadFail:'error al cargar', loading:'cargando...', joinRoomBtn:'unirse',
+    instructions: { title:'¿cómo se juega?', steps:['Cada jugador dice 1, 2 o 3 números consecutivos por turno.','Los números continúan desde donde se dejaron.','Quien sea forzado a decir 11 es eliminado.','El último en pie gana.'], ok:'entendido' } },
 }
-
-const flags = { tr: '🇹🇷', en: '🇬🇧', de: '🇩🇪', es: '🇪🇸' }
+const flags = { tr:'🇹🇷', en:'🇬🇧', de:'🇩🇪', es:'🇪🇸' }
 
 function getLang() { return localStorage.getItem('lang') || 'tr' }
-function setLang(l) {
-  localStorage.setItem('lang', l)
-  applyLang(l)
-  closeLangMenu()
-}
+function setLang(l) { localStorage.setItem('lang', l); applyLang(l); closeLangMenu() }
 function applyLang(l) {
   const t = i18n[l]
   document.getElementById('langFlag').textContent = flags[l]
-  document.querySelectorAll('.lang-item').forEach(el => el.classList.toggle('active', el.dataset.lang === l))
+  document.querySelectorAll('.lang-item').forEach(el => el.classList.toggle('text-blue-400', el.dataset.lang === l))
+  document.getElementById('t-subtitle').textContent = t.subtitle
+  document.getElementById('t-tagline').textContent = t.tagline
+  document.getElementById('t-create-main').textContent = t.createMain
+  document.getElementById('t-join-main').textContent = t.joinMain
+  document.getElementById('t-how').textContent = t.how
   document.getElementById('t-create-title').textContent = t.createTitle
   document.getElementById('t-join-title').textContent = t.joinTitle
-  document.getElementById('t-name-label').textContent = t.nameLbl
-  document.getElementById('t-name-label2').textContent = t.nameLbl
-  document.getElementById('t-size-label').textContent = t.sizeLbl
-  document.getElementById('t-code-label').textContent = t.codeLbl
+  document.getElementById('t-name-c').textContent = t.nameC
+  document.getElementById('t-size-c').textContent = t.sizeC
   document.getElementById('t-create-btn').textContent = t.createBtn
   document.getElementById('t-join-btn').textContent = t.joinBtn
-  document.getElementById('t-or').textContent = t.or
+  document.getElementById('t-name-j').textContent = t.nameJ
+  document.getElementById('t-code-j').textContent = t.codeJ
   document.getElementById('t-open-rooms').textContent = t.openRooms
   document.getElementById('t-your-name-s').textContent = t.yourName
-  document.getElementById('name').placeholder = t.placeholder
-  document.getElementById('nameJoin').placeholder = t.placeholder
-  document.getElementById('serverName').placeholder = t.placeholder
-  document.getElementById('code').placeholder = t.codePlaceholder
-  if (document.getElementById('t-pass-label')) document.getElementById('t-pass-label').textContent = t.passLabel
-  if (document.getElementById('t-pass-label2')) document.getElementById('t-pass-label2').textContent = t.passLabel2
-  document.title = 'eleven — ' + t.subtitle
+  document.title = 'eleven'
+}
+function toggleLangMenu() { document.getElementById('langMenu').classList.toggle('hidden') }
+function closeLangMenu() { document.getElementById('langMenu').classList.add('hidden') }
+document.addEventListener('click', e => { if (!document.getElementById('langBtn').contains(e.target)) closeLangMenu() })
+
+// Instructions
+function openInstructions() { document.getElementById('instructionsModal').classList.remove('hidden') }
+function closeInstructions() { document.getElementById('instructionsModal').classList.add('hidden'); localStorage.setItem('seenInstructions', '1') }
+function updateInstructions(l) {
+  const t = i18n[l].instructions
+  document.querySelector('#instructionsModal h3').textContent = t.title
+  const ul = document.querySelector('#instructionsModal ul')
+  ul.innerHTML = t.steps.map((s,i) => `<li class="flex gap-2"><span class="text-blue-400 font-bold">${i+1}.</span><span>${s}</span></li>`).join('')
+  document.querySelector('#instructionsModal button').textContent = t.ok
 }
 
-function toggleLangMenu() {
-  const m = document.getElementById('langMenu')
-  m.style.display = m.style.display === 'none' ? 'block' : 'none'
-}
-function closeLangMenu() { document.getElementById('langMenu').style.display = 'none' }
-document.addEventListener('click', e => {
-  if (!document.getElementById('langBtn').contains(e.target)) closeLangMenu()
+// Modals
+function openCreate() { document.getElementById('createModal').classList.remove('hidden'); prefillName('nameCreate') }
+function closeCreate() { document.getElementById('createModal').classList.add('hidden'); document.getElementById('createError').classList.add('hidden') }
+function openJoin() { document.getElementById('joinModal').classList.remove('hidden'); prefillName('nameJoin') }
+function closeJoin() { document.getElementById('joinModal').classList.add('hidden'); document.getElementById('joinError').classList.add('hidden') }
+function openServers() { document.getElementById('serverModal').classList.remove('hidden'); prefillName('serverName'); loadRooms() }
+function closeServers() { document.getElementById('serverModal').classList.add('hidden') }
+
+function prefillName(id) { const s = localStorage.getItem('playerName'); if (s) document.getElementById(id).value = s }
+
+// Close on backdrop
+['createModal','joinModal','serverModal','instructionsModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target === e.currentTarget) { if (id === 'instructionsModal') closeInstructions(); else document.getElementById(id).classList.add('hidden') } })
 })
 
-// Init
+function showErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.classList.remove('hidden') }
+function hideErr(id) { document.getElementById(id).classList.add('hidden') }
+
 applyLang(getLang())
+updateInstructions(getLang())
 
-// Server list
-function openServers() {
-  document.getElementById('serverModal').classList.add('open')
-  document.getElementById('serverBtn').classList.add('active')
-  loadRooms()
-}
-function closeServers() {
-  document.getElementById('serverModal').classList.remove('open')
-  document.getElementById('serverBtn').classList.remove('active')
-}
-document.getElementById('serverModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeServers() })
+// Show instructions first time
+if (!localStorage.getItem('seenInstructions')) openInstructions()
 
-async function loadRooms() {
-  const t = i18n[getLang()]
-  const list = document.getElementById('roomList')
-  list.innerHTML = `<p style="font-size:13px;color:#777;text-align:center;padding:20px 0;">${t.loading}</p>`
-  try {
-    const rooms = await fetch('/rooms').then(r => r.json())
-    if (!rooms.length) { list.innerHTML = `<p style="font-size:13px;color:#777;text-align:center;padding:20px 0;">${t.noRooms}</p>`; return }
-    list.innerHTML = ''
-    rooms.forEach(r => {
-      const item = document.createElement('div')
-      item.className = 'server-item'
-      const lock = r.hasPassword ? ' 🔒' : ''
-      const roomLabel = (getLang() === 'tr' ? `${r.host}'${r.host.slice(-1) === 'i' || r.host.slice(-1) === 'ı' ? 'n' : 'in'} odası` : `${r.host}${t.room}`) + lock
-      item.innerHTML = `
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${roomLabel}</div>
-          <div style="font-size:12px;color:#777;">${r.players}/${r.max} ${t.players} · ${r.code}</div>
-        </div>
-        <button class="btn btn-outlined" style="width:auto;padding:6px 16px;font-size:13px;" onclick="quickJoin('${r.code}')">${t.joinRoomBtn}</button>
-      `
-      list.appendChild(item)
-    })
-  } catch { list.innerHTML = `<p style="font-size:13px;color:#f44336;text-align:center;padding:20px 0;">${t.loadFail}</p>` }
-}
-
-function quickJoin(code) {
-  const t = i18n[getLang()]
-  const name = document.getElementById('serverName').value.trim()
-  if (!name) { const e = document.getElementById('serverError'); e.textContent = t.enterName; e.style.display = 'block'; return }
-  document.getElementById('serverError').style.display = 'none'
-  window._joiningCode = code; window._joiningName = name
-  const password = document.getElementById('joinPassword').value.trim()
-  localStorage.setItem('playerName', name)
-  socket.emit('joinRoom', { name, code, password: password || null })
-}
-
-// Socket
 const socket = io()
 
-function showError(msg) { const e = document.getElementById('errorMsg'); e.textContent = msg; e.style.display = 'block' }
-function clearError() { document.getElementById('errorMsg').style.display = 'none' }
+socket.on('connect_error', () => showErr('mainError', '⚠ Bağlantı hatası'))
+socket.on('connect', () => hideErr('mainError'))
 
 function createRoom() {
-  clearError()
+  hideErr('createError')
   const t = i18n[getLang()]
-  const name = document.getElementById('name').value.trim()
-  if (!name) return showError(t.nameEmpty)
+  const name = document.getElementById('nameCreate').value.trim()
+  if (!name) return showErr('createError', t.nameEmpty)
   const [cols, rows] = document.getElementById('gridSize').value.split('x').map(Number)
   const password = document.getElementById('roomPassword').value.trim()
   localStorage.setItem('playerName', name)
@@ -445,31 +249,68 @@ function createRoom() {
 }
 
 function joinRoom() {
-  clearError()
+  hideErr('joinError')
   const t = i18n[getLang()]
   const name = document.getElementById('nameJoin').value.trim()
   const code = document.getElementById('code').value.trim().toUpperCase()
-  if (!name) return showError(t.nameEmpty)
-  if (!code) return showError(t.codeEmpty)
+  if (!name) return showErr('joinError', t.nameEmpty)
+  if (!code) return showErr('joinError', t.codeEmpty)
   const password = document.getElementById('joinPassword').value.trim()
   localStorage.setItem('playerName', name)
   socket.emit('joinRoom', { name, code, password: password || null })
 }
 
-socket.on('roomCreated', code => { window.location = `/game?room=${code}&name=${encodeURIComponent(document.getElementById('name').value.trim())}` })
+function quickJoin(code, hasPassword) {
+  const t = i18n[getLang()]
+  const name = document.getElementById('serverName').value.trim()
+  if (!name) return showErr('serverError', t.enterName)
+  hideErr('serverError')
+  if (hasPassword) {
+    window._quickCode = code; window._quickName = name
+    closeServers()
+    document.getElementById('nameJoin').value = name
+    document.getElementById('code').value = code
+    document.getElementById('passFieldWrap').classList.remove('hidden')
+    openJoin()
+    return
+  }
+  window._joiningCode = code; window._joiningName = name
+  localStorage.setItem('playerName', name)
+  socket.emit('joinRoom', { name, code })
+}
+
+async function loadRooms() {
+  const t = i18n[getLang()]
+  const list = document.getElementById('roomList')
+  list.innerHTML = `<p class="text-sm text-gray-500 text-center py-5">${t.loading}</p>`
+  try {
+    const rooms = await fetch('/rooms').then(r => r.json())
+    if (!rooms.length) { list.innerHTML = `<p class="text-sm text-gray-500 text-center py-5">${t.noRooms}</p>`; return }
+    list.innerHTML = ''
+    rooms.forEach(r => {
+      const lock = r.hasPassword ? ' <span class="text-gray-400">🔒</span>' : ''
+      const div = document.createElement('div')
+      div.className = 'flex items-center justify-between py-3 border-b border-gray-700 last:border-0 gap-3'
+      div.innerHTML = `<div class="flex-1 min-w-0"><div class="text-sm font-medium text-white truncate">${r.host}'in odası${lock}</div><div class="text-xs text-gray-500">${r.players}/${r.max} oyuncu · ${r.code}</div></div><button onclick="quickJoin('${r.code}',${r.hasPassword})" class="text-sm text-blue-400 hover:text-blue-300 border border-blue-800 hover:border-blue-600 rounded-lg px-3 py-1.5 transition-colors">${t.joinRoomBtn}</button>`
+      list.appendChild(div)
+    })
+  } catch { list.innerHTML = `<p class="text-sm text-red-400 text-center py-5">${t.loadFail}</p>` }
+}
+
+socket.on('roomCreated', code => {
+  const name = document.getElementById('nameCreate').value.trim()
+  window.location = `/game?room=${code}&name=${encodeURIComponent(name)}`
+})
 socket.on('updateRoom', () => {
   const name = document.getElementById('nameJoin').value.trim() || window._joiningName || ''
   const code = document.getElementById('code').value.trim().toUpperCase() || window._joiningCode || ''
   if (code) window.location = `/game?room=${code}&name=${encodeURIComponent(name)}`
 })
-socket.on('errorMessage', msg => { showError(msg); const e = document.getElementById('serverError'); e.textContent = msg; e.style.display = 'block' })
+socket.on('errorMessage', msg => { showErr('createError', msg); showErr('joinError', msg); showErr('serverError', msg) })
 
-document.getElementById('name').addEventListener('keydown', e => { if (e.key === 'Enter') createRoom() })
+document.getElementById('nameCreate').addEventListener('keydown', e => { if (e.key === 'Enter') createRoom() })
 document.getElementById('nameJoin').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom() })
 document.getElementById('code').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom() })
-
-const saved = localStorage.getItem('playerName')
-if (saved) { document.getElementById('name').value = saved; document.getElementById('nameJoin').value = saved; document.getElementById('serverName').value = saved }
 </script>
 </body>
 </html>
